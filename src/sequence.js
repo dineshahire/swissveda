@@ -119,7 +119,30 @@ export class SequenceEngine {
     this.aspect = first ? first.width / first.height : 16 / 9;
     if (first) { this.tex.image = first; this.tex.needsUpdate = true; }
     this.current = first ? 0 : -1;
+
+    // Warm the browser HTTP cache for EVERY frame in the background. On a CDN
+    // (Vercel) the on-demand decode fetch otherwise hits the network mid-scroll
+    // → stalls/sticking, worst on back-scroll where evicted frames re-fetch.
+    // Once warmed, every fetch resolves from disk cache instantly. Fire-and-
+    // forget, low priority so it doesn't fight the visible frames.
+    this._warmAll();
+
     return { texture: this.tex, aspect: this.aspect };
+  }
+
+  /** Background: pull every frame into the HTTP cache so later fetches are local. */
+  async _warmAll() {
+    const CONC = 8;
+    let next = 0;
+    const worker = async () => {
+      while (next < this.count) {
+        const i = next++;
+        try { await fetch(this._frameURL(i), { priority: 'low', cache: 'force-cache' }); } catch { /* ignore */ }
+      }
+    };
+    const workers = [];
+    for (let k = 0; k < CONC; k++) workers.push(worker());
+    await Promise.all(workers);
   }
 
   scrub(progress) {
