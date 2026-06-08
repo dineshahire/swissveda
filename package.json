@@ -1,0 +1,19 @@
+{
+  "name": "swiss-VEDA",
+  "version": "1.0.0",
+  "description": "Swiss Veda – Pure Swiss Ghee. Cinematic scroll-scrub 3D hero site (Three.js + GSAP ScrollTrigger).",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5",
+    "lenis": "^1.3.23",
+    "three": "^0.171.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>VK Swiss — Pure Swiss Ghee</title>
+  <meta name="description" content="VK Swiss — Pure Swiss Ghee. Slow-simmered from the milk of free-roaming Alpine herds." />
+
+  <!-- Elegant serif for logo/headings + light sans for body -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- ───────────── LOADING SCREEN ───────────── -->
+  <div id="loader" class="loader">
+    <div class="loader__inner">
+      <div class="loader__logo">VK&nbsp;SWISS</div>
+      <div class="loader__bar"><span id="loader-fill" class="loader__fill"></span></div>
+      <div class="loader__pct"><span id="loader-pct">0</span>%</div>
+    </div>
+  </div>
+
+  <!-- ───────────── FIXED OVERLAY UI (header) ───────────── -->
+  <header class="ui ui--header">
+    <a class="brand" href="#top">VK&nbsp;SWISS</a>
+    <nav class="nav">
+      <a href="#origin">Origin</a>
+      <a href="#products">Products</a>
+      <a href="#find">Where to find us</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <!-- ───────────── PINNED FILM STAGE ───────────── -->
+  <!-- .stage is the scroll spacer; .sticky is what gets pinned -->
+  <section id="top" class="stage">
+    <div class="sticky">
+      <canvas id="scene"></canvas>
+      <div class="vignette"></div>
+      <div class="grain"></div>
+      <!-- white light reveal: scene fades in from white on load -->
+      <div id="intro-flash" class="intro-flash"></div>
+
+      <!-- scroll-synced captions (filled from CONFIG by JS) -->
+      <div id="captions" class="captions"></div>
+
+      <!-- scroll hint -->
+      <div id="scroll-hint" class="scroll-hint">
+        <span>SCROLL</span>
+        <span class="scroll-hint__arrow">↓</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────── CONTENT SECTIONS ───────────── -->
+  <main class="content">
+    <section id="origin" class="section section--story">
+      <p class="eyebrow">The Origin</p>
+      <h2>Born of the Alps,<br />perfected by patience.</h2>
+      <p class="lede">
+        High in the Swiss valleys, free-roaming herds graze on wild alpine
+        grasses. Their milk carries a richness that machines can't hurry — so
+        we don't. Every batch of VK Swiss is slow-simmered the old way,
+        until nothing remains but pure, golden clarity.
+      </p>
+    </section>
+
+    <section id="products" class="section section--ingredients">
+      <p class="eyebrow">Inside the Jar</p>
+      <h2>One ingredient.<br />Nothing else.</h2>
+      <div class="grid">
+        <div class="card">
+          <span class="card__num">01</span>
+          <h3>Grass-fed Milk</h3>
+          <p>Sourced from Alpine herds raised on open pasture, never confined.</p>
+        </div>
+        <div class="card">
+          <span class="card__num">02</span>
+          <h3>Slow Clarification</h3>
+          <p>Simmered low and long to caramelise the milk solids and lift out every impurity.</p>
+        </div>
+        <div class="card">
+          <span class="card__num">03</span>
+          <h3>Sealed at Source</h3>
+          <p>Hand-poured and sealed warm, locking in the nutty aroma and golden hue.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="find" class="section section--find">
+      <p class="eyebrow">Where to find us</p>
+      <h2>Carried by those<br />who care about origin.</h2>
+      <ul class="stores">
+        <li>Select fine-food halls across Switzerland &amp; the EU</li>
+        <li>Premium organic grocers</li>
+        <li>Direct from our online boutique</li>
+      </ul>
+      <a class="btn" href="#contact">Find a stockist</a>
+    </section>
+
+    <footer id="contact" class="section section--footer">
+      <div class="footer__top">
+        <div class="footer__brand">VK&nbsp;SWISS</div>
+        <p class="footer__tag">Pure Swiss Ghee</p>
+      </div>
+      <div class="footer__cols">
+        <div>
+          <h4>Contact</h4>
+          <a href="mailto:hello@vkswiss.com">hello@vkswiss.com</a>
+          <a href="tel:+41000000000">+41 00 000 00 00</a>
+        </div>
+        <div>
+          <h4>Visit</h4>
+          <p>Alpine Dairy Works<br />Switzerland</p>
+        </div>
+        <div>
+          <h4>Follow</h4>
+          <a href="#">Instagram</a>
+          <a href="#">Journal</a>
+        </div>
+      </div>
+      <p class="footer__legal">© 2026 VK Swiss. All rights reserved.</p>
+    </footer>
+  </main>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
