@@ -91,8 +91,9 @@ async function init() {
     return;
   }
 
-  // build the Three.js stage now that we know the media aspect ratio
-  const stage = new Stage(canvas, { aspect });
+  // build the Three.js stage now that we know the media aspect ratio.
+  // engine.maxDPR caps render resolution per device tier (lower on phones).
+  const stage = new Stage(canvas, { aspect, maxDPR: engine.maxDPR ?? 2 });
   stage.tuneTexture(texture);
   stage.setTexture(texture);
   stage.resize();

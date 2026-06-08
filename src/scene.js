@@ -17,9 +17,13 @@ export class Stage {
    * @param {HTMLCanvasElement} canvas
    * @param {{aspect:number}} opts  aspect = sourceWidth / sourceHeight of media
    */
-  constructor(canvas, { aspect }) {
+  constructor(canvas, { aspect, maxDPR = 2 }) {
     this.canvas = canvas;
     this.mediaAspect = aspect;
+    // Cap device-pixel-ratio. On phones DPR is often 3 → rendering at 3× is a
+    // huge GPU/fill-rate cost for little visible gain; the engine passes a lower
+    // cap (1.5) for the low tier so weak GPUs stay smooth.
+    this.maxDPR = maxDPR;
 
     this.renderer = new THREE.WebGLRenderer({
       canvas,
@@ -27,7 +31,7 @@ export class Stage {
       alpha: false,
       powerPreference: 'high-performance',
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.maxDPR));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
 
     this.scene = new THREE.Scene();
@@ -81,7 +85,7 @@ export class Stage {
     const h = window.innerHeight;
     const viewAspect = w / h;
 
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.maxDPR));
     this.renderer.setSize(w, h, false);
 
     // COVER: scale the unit plane so the media fills the 2×2 frustum without

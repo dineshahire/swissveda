@@ -11,14 +11,18 @@ export const CONFIG = {
 
   sequence: {
     // Frames live in /public/<path>, zero-padded: 0001.jpg … NNNN.jpg.
-    // To swap the hero video: extract frames with ffmpeg, e.g.
-    //   ffmpeg -i input.mp4 -vf "fps=15,scale=1920:1080:flags=lanczos" -q:v 3 public/frames-x/%04d.jpg
-    // then set `path` + `count` below (count = number of frames produced).
-    path: 'frames-dinesh/',
+    // Two quality tiers; the engine auto-picks per device (RAM / cores / network
+    // / screen) so the reel runs smoothly everywhere instead of crashing phones.
+    // To re-export, e.g.:
+    //   hi: ffmpeg -i in.mp4 -vf "fps=15,scale=1280:720:flags=lanczos"  -q:v 4 public/frames-dinesh/%04d.jpg
+    //   lo: ffmpeg -i in.mp4 -vf "fps=10,scale=854:480:flags=lanczos"   -q:v 5 public/frames-dinesh-sd/%04d.jpg
     ext: 'jpg',
     pad: 4,        // 0001 → padded to 4 digits
     start: 1,      // first frame index
-    count: 1022,   // 1 OG Dinesh.mp4 @ 15fps × 68.1s, 1080p. Sliding-window decode → RAM-bounded.
+    tiers: {
+      hi: { path: 'frames-dinesh/',    count: 1022 }, // 720p @15fps — desktop / good devices
+      lo: { path: 'frames-dinesh-sd/', count: 681 },  // 480p @10fps — mobile / low-end / slow net
+    },
   },
 
   // Scroll-synced captions. `at` is normalized scroll progress 0..1 where the

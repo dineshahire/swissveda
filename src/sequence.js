@@ -1,33 +1,66 @@
 // ─────────────────────────────────────────────────────────────────────────
 //  Image-sequence engine — the site's hero.
-//  Scroll-scrubbed frame reel. Sharpest option on big screens — every pixel is
-//  a real decoded JPG, never a re-sampled video frame.
+//  Scroll-scrubbed frame reel. Every pixel is a real decoded JPG, never a
+//  re-sampled video frame.
 //
-//  MEMORY MODEL — sliding window (the whole point):
-//   • We do NOT hold every frame decoded. A long 1080p/1440p reel decoded in
-//     full is multiple GB of bitmaps → the tab OOM-crashes.
-//   • Instead we keep only a small WINDOW of ImageBitmaps around the current
-//     frame (ahead-biased for forward scroll) and close() the rest, so RAM is
-//     bounded no matter how many frames or how high-res they are.
-//   • Compressed JPEGs are cheap (img src), decode happens on demand into the
-//     window with look-ahead prefetch so scrubbing stays smooth.
+//  RUNS ON EVERY DEVICE — two pieces working together:
+//   1. TIER: at startup we sniff the device (RAM / CPU cores / network /
+//      screen) and pick a quality tier from CONFIG.sequence.tiers. Phones and
+//      low-end / slow-network devices get the small 480p@10fps reel; capable
+//      devices get 720p@15fps. This is what stops low devices from crashing.
+//   2. SLIDING WINDOW: we never hold the whole reel decoded (that's GBs → OOM).
+//      Only a small WINDOW of ImageBitmaps around the playhead is kept; the
+//      rest are close()d. Window size scales with the tier so RAM stays bounded
+//      (~340MB desktop, ~70MB mobile).
 // ─────────────────────────────────────────────────────────────────────────
 
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
 
-// Sliding-window sizes around the playhead. Prefetch is direction-aware so
-// scrubbing UP is as smooth as scrubbing DOWN (LEAD = travel direction).
-const LEAD = 30;   // prefetch ahead in the current scroll direction
-const TRAIL = 24;  // prefetch behind — generous so a direction REVERSAL finds
-                   // frames already decoded instead of stalling on re-decode
-const WIN = 46;    // eviction half-window; keeps recently-passed frames cached
-                   // (≈92 frames ~0.75GB @1080p) so back-scroll is instant
-const MAX_INFLIGHT = 8; // concurrent decodes cap (faster catch-up on fast scrub)
+// Per-tier tuning. Window sizes set the RAM ceiling; prefetch is direction-aware
+// so scrubbing UP is as smooth as DOWN. INFLIGHT caps concurrent decodes.
+const PROFILES = {
+  hi: { LEAD: 30, TRAIL: 24, WIN: 46, INFLIGHT: 8, PRELOAD: 48, MAXDPR: 2,   warm: true },
+  lo: { LEAD: 16, TRAIL: 12, WIN: 20, INFLIGHT: 4, PRELOAD: 24, MAXDPR: 1.5, warm: false },
+};
+
+// Decide tier from device signals. Conservative: anything that smells low-end
+// or bandwidth-constrained gets the light reel.
+function pickTier() {
+  const nav = typeof navigator !== 'undefined' ? navigator : {};
+  const conn = nav.connection || {};
+  const mem = nav.deviceMemory;            // GB, Chrome only (undefined elsewhere)
+  const cores = nav.hardwareConcurrency;   // logical cores
+  const slowNet = conn.saveData === true ||
+    ['slow-2g', '2g', '3g'].includes(conn.effectiveType);
+  const coarse = typeof matchMedia !== 'undefined' &&
+    matchMedia('(pointer: coarse)').matches; // touch / phone / tablet
+  const smallScreen = typeof window !== 'undefined' &&
+    Math.min(window.innerWidth, window.innerHeight) <= 820;
+
+  const lowEnd =
+    slowNet ||
+    (typeof mem === 'number' && mem <= 4) ||
+    (typeof cores === 'number' && cores <= 4) ||
+    (coarse && smallScreen);
+
+  return lowEnd ? 'lo' : 'hi';
+}
 
 export class SequenceEngine {
   constructor() {
-    this.count = CONFIG.sequence.count;
+    const tiers = CONFIG.sequence.tiers;
+    const picked = pickTier();
+    this.tier = tiers[picked] ? picked : 'hi';
+    const t = tiers[this.tier];
+    const p = PROFILES[this.tier];
+
+    this.path = t.path;
+    this.count = t.count;
+    this.LEAD = p.LEAD; this.TRAIL = p.TRAIL; this.WIN = p.WIN;
+    this.INFLIGHT = p.INFLIGHT; this.PRELOAD = p.PRELOAD;
+    this.maxDPR = p.MAXDPR; this.doWarm = p.warm;
+
     this.current = -1;
     this._target = 0;
     this._cur = 0;
@@ -40,11 +73,13 @@ export class SequenceEngine {
     this._queued = new Set();  // O(1) membership for _queue
     this._active = 0;          // running decodes
     this._warned = false;      // surface the first decode failure once
+
+    console.info(`[sequence] tier=${this.tier} (${this.path}, ${this.count} frames)`);
   }
 
   _frameURL(i) {
     const n = String(CONFIG.sequence.start + i).padStart(CONFIG.sequence.pad, '0');
-    return `${CONFIG.sequence.path}${n}.${CONFIG.sequence.ext}`;
+    return `${this.path}${n}.${CONFIG.sequence.ext}`;
   }
 
   // Decode one frame into the window (returns a promise of the bitmap or null).
@@ -79,7 +114,7 @@ export class SequenceEngine {
   }
 
   _pump() {
-    while (this._active < MAX_INFLIGHT && this._queue.length) {
+    while (this._active < this.INFLIGHT && this._queue.length) {
       const i = this._queue.shift();
       this._queued.delete(i);
       this._active++;
@@ -89,7 +124,7 @@ export class SequenceEngine {
 
   // Drop bitmaps outside the window and free their GPU/CPU memory.
   _evict(idx) {
-    const lo = idx - WIN, hi = idx + WIN;
+    const lo = idx - this.WIN, hi = idx + this.WIN;
     for (const [i, bmp] of this.bitmaps) {
       if (i < lo || i > hi) {
         bmp.close?.();
@@ -110,7 +145,7 @@ export class SequenceEngine {
     this.tex.flipY = false; // bitmaps are decoded with imageOrientation:'flipY' already
     // Decode a starter run sequentially so frame 0 is ready and the first
     // stretch of scroll has zero hitch. Rest stream in on demand.
-    const PRELOAD = Math.min(48, this.count);
+    const PRELOAD = Math.min(this.PRELOAD, this.count);
     for (let i = 0; i < PRELOAD; i++) {
       await this._decode(i);
       if (onProgress) onProgress((i + 1) / PRELOAD);
@@ -120,12 +155,11 @@ export class SequenceEngine {
     if (first) { this.tex.image = first; this.tex.needsUpdate = true; }
     this.current = first ? 0 : -1;
 
-    // Warm the browser HTTP cache for EVERY frame in the background. On a CDN
-    // (Vercel) the on-demand decode fetch otherwise hits the network mid-scroll
-    // → stalls/sticking, worst on back-scroll where evicted frames re-fetch.
-    // Once warmed, every fetch resolves from disk cache instantly. Fire-and-
-    // forget, low priority so it doesn't fight the visible frames.
-    this._warmAll();
+    // Warm the browser HTTP cache for every frame in the background so the
+    // on-demand decode fetch resolves locally (no mid-scroll network stall on a
+    // CDN). Skipped on low/metered devices — there we lean on the prefetch
+    // window instead of pulling the whole reel up front over cellular.
+    if (this.doWarm) this._warmAll();
 
     return { texture: this.tex, aspect: this.aspect };
   }
@@ -152,7 +186,7 @@ export class SequenceEngine {
   // Nearest already-decoded frame to idx (so we never flash blank on a jump).
   _nearest(idx) {
     if (this.bitmaps.has(idx)) return idx;
-    for (let d = 1; d <= WIN; d++) {
+    for (let d = 1; d <= this.WIN; d++) {
       if (this.bitmaps.has(idx - d)) return idx - d;
       if (this.bitmaps.has(idx + d)) return idx + d;
     }
@@ -170,8 +204,8 @@ export class SequenceEngine {
     // direction-aware prefetch: load most aggressively where the user is heading
     const dir = idx >= this._lastIdx ? 1 : -1;
     this._lastIdx = idx;
-    const lead = dir > 0 ? LEAD : TRAIL;   // frames ahead (in travel dir)
-    const trail = dir > 0 ? TRAIL : LEAD;  // frames behind
+    const lead = dir > 0 ? this.LEAD : this.TRAIL;   // frames ahead (in travel dir)
+    const trail = dir > 0 ? this.TRAIL : this.LEAD;  // frames behind
 
     // REBUILD the decode queue every frame in priority order (closest-needed
     // first). Without this the queue stays FIFO: on a direction reversal the
@@ -203,7 +237,7 @@ export class SequenceEngine {
   kick() {
     const idx = Math.round(this._cur * (this.count - 1));
     this._enqueue(idx);
-    for (let d = 1; d <= WIN; d++) { this._enqueue(idx + d); this._enqueue(idx - d); }
+    for (let d = 1; d <= this.WIN; d++) { this._enqueue(idx + d); this._enqueue(idx - d); }
   }
 
   /** Fallback autoplay: cycle frames on a timer at ~12fps, decoding as it goes. */
