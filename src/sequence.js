@@ -1,66 +1,55 @@
 // ─────────────────────────────────────────────────────────────────────────
 //  Image-sequence engine — the site's hero.
-//  Scroll-scrubbed frame reel. Every pixel is a real decoded JPG, never a
-//  re-sampled video frame.
+//  Scroll-scrubbed frame reel rendered to a WebGL plane.
 //
-//  RUNS ON EVERY DEVICE — two pieces working together:
-//   1. TIER: at startup we sniff the device (RAM / CPU cores / network /
-//      screen) and pick a quality tier from CONFIG.sequence.tiers. Phones and
-//      low-end / slow-network devices get the small 480p@10fps reel; capable
-//      devices get 720p@15fps. This is what stops low devices from crashing.
-//   2. SLIDING WINDOW: we never hold the whole reel decoded (that's GBs → OOM).
-//      Only a small WINDOW of ImageBitmaps around the playhead is kept; the
-//      rest are close()d. Window size scales with the tier so RAM stays bounded
-//      (~340MB desktop, ~70MB mobile).
+//  HOLD-ALL model (why scrubbing is smooth everywhere, both directions):
+//   • The reel is a SMALL set of frames (≈140–180) — few enough to decode the
+//     WHOLE thing into RAM once, up front, behind the loader.
+//   • After that, scrubbing does ZERO fetching/decoding/eviction — every frame
+//     swap is just `texture.image = alreadyDecodedBitmap`. So scrolling forward
+//     AND back is instant; there is nothing to lag on, even on low-end devices
+//     over a CDN. (The old on-demand window re-decoded evicted frames on
+//     scroll-back, which was the lag.)
+//   • A device tier picks resolution (720p desktop / 480p low) so RAM + decode
+//     time stay sane everywhere.
 // ─────────────────────────────────────────────────────────────────────────
 
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
 
-// Per-tier tuning. Window sizes set the RAM ceiling; prefetch is direction-aware
-// so scrubbing UP is as smooth as DOWN. INFLIGHT caps concurrent decodes.
+// Per-tier render cap (decode concurrency + DPR). Frame COUNT/res come from
+// CONFIG.sequence.tiers so the held set stays within a safe RAM budget.
 const PROFILES = {
-  hi: { LEAD: 30, TRAIL: 24, WIN: 46, INFLIGHT: 8, PRELOAD: 48, MAXDPR: 2,   warm: true },
-  lo: { LEAD: 16, TRAIL: 12, WIN: 20, INFLIGHT: 4, PRELOAD: 24, MAXDPR: 1.5, warm: false },
+  hi: { MAXDPR: 2,   CONC: 12 },
+  lo: { MAXDPR: 1.5, CONC: 8 },
 };
 
-// Decide tier from device signals. Conservative: anything that smells low-end
-// or bandwidth-constrained gets the light reel.
 function pickTier() {
   const nav = typeof navigator !== 'undefined' ? navigator : {};
   const conn = nav.connection || {};
-  const mem = nav.deviceMemory;            // GB, Chrome only (undefined elsewhere)
-  const cores = nav.hardwareConcurrency;   // logical cores
-  const slowNet = conn.saveData === true ||
-    ['slow-2g', '2g', '3g'].includes(conn.effectiveType);
-  const coarse = typeof matchMedia !== 'undefined' &&
-    matchMedia('(pointer: coarse)').matches; // touch / phone / tablet
-  const smallScreen = typeof window !== 'undefined' &&
-    Math.min(window.innerWidth, window.innerHeight) <= 820;
+  const mem = nav.deviceMemory;
+  const cores = nav.hardwareConcurrency;
+  const slowNet = conn.saveData === true || ['slow-2g', '2g', '3g'].includes(conn.effectiveType);
+  const coarse = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches;
+  const smallScreen = typeof window !== 'undefined' && Math.min(window.innerWidth, window.innerHeight) <= 820;
 
-  // GPU probe: a software renderer (SwiftShader / llvmpipe / Microsoft Basic)
-  // means no real GPU → the hi reel will crawl. Force the light tier.
+  // GPU probe — only TRUE software rasterizers count as weak (NOT "Mesa", which
+  // is the normal open-source driver for real Intel/AMD GPUs).
   let weakGPU = false;
   try {
     const c = document.createElement('canvas');
     const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
     if (!gl) {
-      weakGPU = true; // no WebGL at all
+      weakGPU = true;
     } else {
       const dbg = gl.getExtension('WEBGL_debug_renderer_info');
       const r = dbg ? String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL)) : '';
-      // ONLY true software rasterizers — NOT "Mesa", which is the normal
-      // open-source driver for real Intel/AMD GPUs (would wrongly demote them).
       if (/swiftshader|llvmpipe|software|microsoft basic|basic render/i.test(r)) weakGPU = true;
     }
   } catch { weakGPU = true; }
 
-  // Demote to the light reel only for genuinely constrained devices, so capable
-  // laptops/desktops keep the sharp hi reel (mis-demotion = the "low quality" bug).
   const lowEnd =
-    weakGPU ||
-    slowNet ||
-    (coarse && smallScreen) ||                 // phones
+    weakGPU || slowNet || (coarse && smallScreen) ||
     (typeof mem === 'number' && mem <= 2) ||
     (typeof cores === 'number' && cores <= 2);
 
@@ -77,24 +66,17 @@ export class SequenceEngine {
 
     this.path = t.path;
     this.count = t.count;
-    this.LEAD = p.LEAD; this.TRAIL = p.TRAIL; this.WIN = p.WIN;
-    this.INFLIGHT = p.INFLIGHT; this.PRELOAD = p.PRELOAD;
-    this.maxDPR = p.MAXDPR; this.doWarm = p.warm;
+    this.maxDPR = p.MAXDPR;
+    this.conc = p.CONC;
 
+    this.frames = new Array(this.count); // idx -> ImageBitmap (all held)
     this.current = -1;
     this._target = 0;
     this._cur = 0;
-    this._lastIdx = 0; // for scroll-direction detection
     this.aspect = 16 / 9;
+    this._warned = false;
 
-    this.bitmaps = new Map();  // idx -> ImageBitmap (the live window)
-    this.inflight = new Set(); // idx currently decoding
-    this._queue = [];          // pending idx to decode (ordered by priority)
-    this._queued = new Set();  // O(1) membership for _queue
-    this._active = 0;          // running decodes
-    this._warned = false;      // surface the first decode failure once
-
-    console.info(`[sequence] tier=${this.tier} (${this.path}, ${this.count} frames)`);
+    console.info(`[sequence] tier=${this.tier} (${this.path}, ${this.count} frames, hold-all)`);
   }
 
   _frameURL(i) {
@@ -102,182 +84,73 @@ export class SequenceEngine {
     return `${this.path}${n}.${CONFIG.sequence.ext}`;
   }
 
-  // Decode one frame into the window (returns a promise of the bitmap or null).
-  async _decode(i) {
-    if (i < 0 || i >= this.count || this.bitmaps.has(i) || this.inflight.has(i)) return null;
-    this.inflight.add(i);
+  async _decodeFrame(i) {
     try {
       const res = await fetch(this._frameURL(i));
       const blob = await res.blob();
-      // flipY here (paired with tex.flipY=false) — ImageBitmap uploads with the
-      // opposite Y origin to HTMLImageElement, so without this the reel is upside-down.
-      const bmp = await createImageBitmap(blob, { imageOrientation: 'flipY' });
-      this.bitmaps.set(i, bmp);
-      return bmp;
+      // flipY (paired with tex.flipY=false): ImageBitmap uploads with opposite
+      // Y origin to HTMLImageElement, else the reel renders upside-down.
+      return await createImageBitmap(blob, { imageOrientation: 'flipY' });
     } catch (err) {
       if (!this._warned) {
         this._warned = true;
-        console.warn(`[sequence] frame decode failed (${this._frameURL(i)}). Check CONFIG.sequence path/count.`, err);
+        console.warn(`[sequence] frame decode failed (${this._frameURL(i)}).`, err);
       }
       return null;
-    } finally {
-      this.inflight.delete(i);
     }
   }
 
-  // Throttled queue runner so a big jump doesn't fire hundreds of decodes.
-  _enqueue(i) {
-    if (i < 0 || i >= this.count || this.bitmaps.has(i) || this.inflight.has(i) || this._queued.has(i)) return;
-    this._queue.push(i);
-    this._queued.add(i);
-    this._pump();
-  }
-
-  _pump() {
-    while (this._active < this.INFLIGHT && this._queue.length) {
-      const i = this._queue.shift();
-      this._queued.delete(i);
-      this._active++;
-      this._decode(i).finally(() => { this._active--; this._pump(); });
-    }
-  }
-
-  // Drop bitmaps outside the window and free their GPU/CPU memory.
-  _evict(idx) {
-    const lo = idx - this.WIN, hi = idx + this.WIN;
-    for (const [i, bmp] of this.bitmaps) {
-      if (i < lo || i > hi) {
-        bmp.close?.();
-        this.bitmaps.delete(i);
-      }
-    }
-    // also forget queued work that's now out of window
-    this._queue = this._queue.filter((i) => {
-      const keep = i >= lo && i <= hi;
-      if (!keep) this._queued.delete(i);
-      return keep;
-    });
-  }
-
-  /** Preload the opening frames so the reveal isn't blank; reports 0..1. */
+  /** Decode the WHOLE reel up front (concurrency-capped); reports 0..1. */
   async load(onProgress) {
     this.tex = new THREE.Texture();
-    this.tex.flipY = false; // bitmaps are decoded with imageOrientation:'flipY' already
-    // Decode a starter run sequentially so frame 0 is ready and the first
-    // stretch of scroll has zero hitch. Rest stream in on demand.
-    const PRELOAD = Math.min(this.PRELOAD, this.count);
-    // Decode the opening frames in PARALLEL (not one-by-one) so a slow disk/CDN
-    // can't make the loader sit there looking broken. Each decode is also raced
-    // against an 8s timeout so a single stalled fetch never freezes startup.
-    let done = 0;
-    const withTimeout = (p) => Promise.race([p, new Promise((r) => setTimeout(r, 8000))]);
-    await Promise.all(Array.from({ length: PRELOAD }, (_, i) =>
-      withTimeout(this._decode(i)).then(() => { done++; if (onProgress) onProgress(done / PRELOAD); })
-    ));
-    const first = this.bitmaps.get(0);
-    this.aspect = first ? first.width / first.height : 16 / 9;
-    if (first) { this.tex.image = first; this.tex.needsUpdate = true; }
-    this.current = first ? 0 : -1;
+    this.tex.flipY = false;
 
-    // Warm the browser HTTP cache for every frame in the background so the
-    // on-demand decode fetch resolves locally (no mid-scroll network stall on a
-    // CDN). Skipped on low/metered devices — there we lean on the prefetch
-    // window instead of pulling the whole reel up front over cellular.
-    if (this.doWarm) this._warmAll();
-
-    return { texture: this.tex, aspect: this.aspect };
-  }
-
-  /** Background: pull every frame into the HTTP cache so later fetches are local. */
-  async _warmAll() {
-    const CONC = 8;
-    let next = 0;
+    let done = 0, next = 0;
     const worker = async () => {
       while (next < this.count) {
         const i = next++;
-        try { await fetch(this._frameURL(i), { priority: 'low', cache: 'force-cache' }); } catch { /* ignore */ }
+        this.frames[i] = await this._decodeFrame(i);
+        done++;
+        if (onProgress) onProgress(done / this.count);
       }
     };
-    const workers = [];
-    for (let k = 0; k < CONC; k++) workers.push(worker());
-    await Promise.all(workers);
+    await Promise.all(Array.from({ length: Math.min(this.conc, this.count) }, worker));
+
+    const first = this.frames.find(Boolean) || null;
+    this.aspect = first ? first.width / first.height : 16 / 9;
+    if (first) { this.tex.image = this.frames[0] || first; this.tex.needsUpdate = true; this.current = 0; }
+    return { texture: this.tex, aspect: this.aspect };
   }
 
   scrub(progress) {
     this._target = Math.max(0, Math.min(progress, 1));
   }
 
-  // Nearest already-decoded frame to idx (so we never flash blank on a jump).
-  _nearest(idx) {
-    if (this.bitmaps.has(idx)) return idx;
-    for (let d = 1; d <= this.WIN; d++) {
-      if (this.bitmaps.has(idx - d)) return idx - d;
-      if (this.bitmaps.has(idx + d)) return idx + d;
-    }
-    return this.current; // fall back to whatever is on screen
-  }
-
-  /** Returns the texture to show this frame, or null if unchanged. */
+  /** Ease toward the scroll target and swap to that frame. Pure swap → no lag. */
   update() {
-    // ease toward target so fast scrolls don't skip jarringly
     this._cur += (this._target - this._cur) * 0.18;
     if (Math.abs(this._target - this._cur) < 0.0005) this._cur = this._target;
 
     const idx = Math.min(this.count - 1, Math.max(0, Math.round(this._cur * (this.count - 1))));
+    if (idx === this.current) return null;
 
-    // settled on a frame with a full window + nothing pending → nothing to do
-    if (this._cur === this._target && idx === this.current && this._queue.length === 0 && this._active === 0) return null;
-
-    // direction-aware prefetch: load most aggressively where the user is heading
-    const dir = idx >= this._lastIdx ? 1 : -1;
-    this._lastIdx = idx;
-    const lead = dir > 0 ? this.LEAD : this.TRAIL;   // frames ahead (in travel dir)
-    const trail = dir > 0 ? this.TRAIL : this.LEAD;  // frames behind
-
-    // REBUILD the decode queue every frame in priority order (closest-needed
-    // first). Without this the queue stays FIFO: on a direction reversal the
-    // frames you now need sit BEHIND stale ones → the reel freezes until they
-    // drain. Clearing + re-enqueueing nearest-first guarantees the frame you're
-    // on (and its immediate neighbours) always decode next. In-flight decodes
-    // continue; only the pending order is reset.
-    this._queue.length = 0;
-    this._queued.clear();
-    this._enqueue(idx);
-    const reach = Math.max(lead, trail);
-    for (let d = 1; d <= reach; d++) {
-      if (d <= lead) this._enqueue(idx + dir * d);   // closest in travel dir
-      if (d <= trail) this._enqueue(idx - dir * d);  // then the other side
-    }
-    this._evict(idx);
-
-    const show = this._nearest(idx);
-    if (show < 0 || show === this.current) return null;
-    const bmp = this.bitmaps.get(show);
-    if (!bmp) return null;
-    this.current = show;
+    const bmp = this.frames[idx];
+    if (!bmp) return null; // a frame that failed to decode → keep current
+    this.current = idx;
     this.tex.image = bmp;
     this.tex.needsUpdate = true;
     return this.tex;
   }
 
-  /** Re-prime decoder after a tab-visibility change. */
-  kick() {
-    const idx = Math.round(this._cur * (this.count - 1));
-    this._enqueue(idx);
-    for (let d = 1; d <= this.WIN; d++) { this._enqueue(idx + d); this._enqueue(idx - d); }
-  }
+  kick() { /* hold-all: nothing to re-prime */ }
 
-  /** Fallback autoplay: cycle frames on a timer at ~12fps, decoding as it goes. */
+  /** Fallback autoplay (reduced-motion): cycle the held frames on a timer. */
   autoplayLoop(onFrame) {
     let i = 0;
-    const fps = 12;
-    this._timer = setInterval(async () => {
+    this._timer = setInterval(() => {
       i = (i + 1) % this.count;
-      this._enqueue(i);
-      for (let d = 1; d <= 6; d++) this._enqueue(i + d);
-      this._evict(i);
-      const bmp = this.bitmaps.get(i) || this.bitmaps.get(this._nearest(i));
+      const bmp = this.frames[i];
       if (bmp) { this.tex.image = bmp; this.tex.needsUpdate = true; onFrame(this.tex); }
-    }, 1000 / fps);
+    }, 1000 / 12);
   }
 }
