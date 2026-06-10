@@ -117,12 +117,12 @@ a { color: inherit; text-decoration: none; }
   transform-origin: center center; will-change: transform;
   /* Cinematic colour grade — lifts contrast & warmth so the reel reads
      sharper and richer (golden-ghee mood) at zero GPU cost on every device. */
-  filter: contrast(1.12) saturate(1.16) brightness(1.1) sepia(0.06);
+  filter: contrast(1.06) saturate(1.1) sepia(0.04);
 }
 /* Capable devices (hi tier) also get a real unsharp-mask pass to kill the
    upscale softness. Gated by JS so low-end/mobile GPUs skip the convolution. */
 #scene.sharp {
-  filter: url(#sharpen) contrast(1.12) saturate(1.16) brightness(1.1) sepia(0.06);
+  filter: url(#sharpen) contrast(1.06) saturate(1.1) sepia(0.04);
 }
 
 /* cinematic vignette + subtle film grain */
