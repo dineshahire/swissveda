@@ -25,6 +25,15 @@ export const CONFIG = {
     },
   },
 
+  // Secondary scroll-scrubbed clip shown in a content box (src/clip.js).
+  clip: {
+    path: 'scroll-frames/',
+    ext: 'jpg',
+    pad: 4,
+    start: 1,
+    count: 150,   // scroll animation.mp4 @ 15fps × 10s, 480p
+  },
+
   // Scroll-synced captions. `at` is normalized scroll progress 0..1 where the
   // caption is fully visible; it cross-fades around that point.
   captions: [

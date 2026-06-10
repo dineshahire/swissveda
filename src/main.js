@@ -14,6 +14,7 @@ import Lenis from 'lenis';
 import { CONFIG } from './config.js';
 import { Stage } from './scene.js';
 import { SequenceEngine } from './sequence.js';
+import { ClipScrubber } from './clip.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -94,6 +95,10 @@ async function init() {
   // build the Three.js stage now that we know the media aspect ratio.
   // engine.maxDPR caps render resolution per device tier (lower on phones).
   const stage = new Stage(canvas, { aspect, maxDPR: engine.maxDPR ?? 2 });
+
+  // Apply the GPU unsharp pass only on the capable (hi) tier — keeps weak
+  // mobile GPUs out of the per-frame convolution so they stay smooth.
+  if (engine.tier === 'hi') canvas.classList.add('sharp');
   stage.tuneTexture(texture);
   stage.setTexture(texture);
   stage.resize();
@@ -114,6 +119,46 @@ async function init() {
   }
 
   setupContentReveals();
+  setupClip();
+  setupAnchorScroll();
+}
+
+// ── smooth in-page anchor scrolling via Lenis (falls back to native) ──────────
+function setupAnchorScroll() {
+  document.querySelectorAll('a[href^="#"]').forEach((a) => {
+    a.addEventListener('click', (e) => {
+      const id = a.getAttribute('href');
+      if (!id || id.length < 2) return;
+      const target = document.querySelector(id);
+      if (!target) return;
+      e.preventDefault();
+      if (lenis) lenis.scrollTo(target, { duration: 1.2 });
+      else target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+}
+
+// ── secondary scroll-scrubbed clip in a content box ──────────────────────────
+async function setupClip() {
+  const el = document.getElementById('clip-canvas');
+  if (!el || !CONFIG.clip) return;
+  const clip = new ClipScrubber(el, CONFIG.clip);
+  await clip.load();
+
+  // scrub the clip across the .clip-stage spacer's scroll progress
+  ScrollTrigger.create({
+    trigger: '.clip-stage',
+    start: 'top top',
+    end: 'bottom bottom',
+    onUpdate: (self) => clip.scrub(self.progress),
+  });
+
+  // its own render loop — eases toward the scroll target each frame
+  const tick = () => { clip.update(); requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+
+  // keep the scrub mapping correct after layout shifts
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) ScrollTrigger.refresh(); });
 }
 
 // ── scroll-scrub mode ────────────────────────────────────────────────────────
@@ -217,13 +262,50 @@ function updateCaptions(p) {
 
 // ── reveal content sections on scroll ────────────────────────────────────────
 function setupContentReveals() {
-  const targets = document.querySelectorAll('.section h2, .lede, .card, .stores, .btn, .footer__cols, .footer__brand');
-  targets.forEach((el) => {
+  // generic fade-up for headings, copy, certs and footer blocks
+  const fadeUp = document.querySelectorAll(
+    '.eyebrow--center, .swiss-made, .tradition__copy p, .cert, .certs__note, ' +
+    '.footer__brand-col, .footer__menu, .footer__contact'
+  );
+  fadeUp.forEach((el, i) => {
     gsap.fromTo(el,
       { opacity: 0, y: 40 },
       {
-        opacity: 1, y: 0, duration: 1, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 85%', once: true },
+        opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', delay: (i % 4) * 0.06,
+        scrollTrigger: { trigger: el, start: 'top 88%', once: true },
+      });
+  });
+
+  // product rows: packshot slides in from its side, info eases up + staggers
+  document.querySelectorAll('.product').forEach((row) => {
+    const reversed = row.classList.contains('product--reverse');
+    const media = row.querySelector('.product__media');
+    const shot = row.querySelector('.product__shot');
+    const info = row.querySelectorAll('.product__info > *');
+
+    // packshot wipes in from its side (clip-path) + soft fade → editorial reveal
+    if (shot) {
+      gsap.fromTo(shot,
+        { opacity: 0, clipPath: reversed ? 'inset(0 0 0 100%)' : 'inset(0 100% 0 0)' },
+        {
+          opacity: 1, clipPath: 'inset(0 0 0 0)', duration: 1.1, ease: 'power3.out',
+          scrollTrigger: { trigger: row, start: 'top 80%', once: true },
+        });
+    }
+    // gentle parallax: the packshot drifts as the row scrolls past → depth
+    if (media && !REDUCED) {
+      gsap.fromTo(media,
+        { yPercent: 10 },
+        {
+          yPercent: -10, ease: 'none',
+          scrollTrigger: { trigger: row, start: 'top bottom', end: 'bottom top', scrub: true },
+        });
+    }
+    gsap.fromTo(info,
+      { opacity: 0, y: 28 },
+      {
+        opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.05,
+        scrollTrigger: { trigger: row, start: 'top 80%', once: true },
       });
   });
 }
