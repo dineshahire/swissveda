@@ -49,16 +49,20 @@ function pickTier() {
     } else {
       const dbg = gl.getExtension('WEBGL_debug_renderer_info');
       const r = dbg ? String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL)) : '';
-      if (/swiftshader|software|llvmpipe|microsoft basic|mesa/i.test(r)) weakGPU = true;
+      // ONLY true software rasterizers — NOT "Mesa", which is the normal
+      // open-source driver for real Intel/AMD GPUs (would wrongly demote them).
+      if (/swiftshader|llvmpipe|software|microsoft basic|basic render/i.test(r)) weakGPU = true;
     }
   } catch { weakGPU = true; }
 
+  // Demote to the light reel only for genuinely constrained devices, so capable
+  // laptops/desktops keep the sharp hi reel (mis-demotion = the "low quality" bug).
   const lowEnd =
     weakGPU ||
     slowNet ||
-    (typeof mem === 'number' && mem <= 4) ||
-    (typeof cores === 'number' && cores <= 4) ||
-    (coarse && smallScreen);
+    (coarse && smallScreen) ||                 // phones
+    (typeof mem === 'number' && mem <= 2) ||
+    (typeof cores === 'number' && cores <= 2);
 
   return lowEnd ? 'lo' : 'hi';
 }
