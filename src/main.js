@@ -114,9 +114,12 @@ async function init() {
   // NOTE: the SVG unsharp pass (#scene.sharp) is intentionally NOT applied — a
   // per-frame full-screen feConvolveMatrix is too GPU-heavy and made scrubbing
   // lag. The cheap CSS colour grade stays; sharpness comes from the 1080p frames.
-  stage.tuneTexture(texture);
+  stage.preupload(engine.textures); // push every frame to the GPU up front
   stage.setTexture(texture);
   stage.resize();
+  // re-fit after layout settles (catches the Chrome "half frame" case)
+  requestAnimationFrame(() => stage.resize());
+  setTimeout(() => stage.resize(), 200);
 
   // small delay so the 100% reads, then reveal
   setTimeout(hideLoader, 350);

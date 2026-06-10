@@ -21,8 +21,8 @@ export const CONFIG = {
     pad: 4,        // 0001 → padded to 4 digits
     start: 1,      // first frame index
     tiers: {
-      hi: { path: 'frames-dinesh/',    count: 280 }, // 720p HD — quality + smooth both ways (~1GB RAM held)
-      lo: { path: 'frames-dinesh-sd/', count: 380 }, // 480p — low-end (~620MB RAM)
+      hi: { path: 'frames-dinesh/',    count: 200 }, // 720p HD, pre-uploaded (~740MB VRAM) — smooth both ways
+      lo: { path: 'frames-dinesh-sd/', count: 300 }, // 480p — low-end devices
     },
   },
 
