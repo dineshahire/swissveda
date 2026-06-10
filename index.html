@@ -45,7 +45,9 @@
   <!-- .stage is the scroll spacer; .sticky is what gets pinned -->
   <section id="top" class="stage">
     <div class="sticky">
-      <canvas id="scene"></canvas>
+      <video id="hero-video" class="hero-video" muted playsinline webkit-playsinline preload="auto">
+        <source src="videos/hero.mp4?v=intra3" type="video/mp4" />
+      </video>
       <div class="vignette"></div>
       <div class="grain"></div>
       <!-- white light reveal: scene fades in from white on load -->
@@ -79,7 +81,9 @@
     <section class="clip-stage">
       <div class="clip-sticky">
         <div class="clip-box">
-          <canvas id="clip-canvas"></canvas>
+          <video id="clip-video" class="clip-video" muted playsinline webkit-playsinline preload="auto">
+            <source src="videos/clip.mp4?v=intra3" type="video/mp4" />
+          </video>
         </div>
       </div>
     </section>
