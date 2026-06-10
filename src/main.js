@@ -28,8 +28,11 @@ window.scrollTo(0, 0);
 // We drive it from GSAP's ticker and tell ScrollTrigger to update on each Lenis
 // frame so the scrub stays perfectly in sync.
 let lenis = null;
-function initSmoothScroll() {
-  if (REDUCED) return; // honor reduced-motion: keep native scroll
+function initSmoothScroll(enable = true) {
+  // Skip Lenis on reduced-motion AND on the low tier — its per-frame rAF
+  // smoothing is extra work weak CPUs don't need; native scroll is lighter
+  // and ScrollTrigger still drives the scrub fine.
+  if (REDUCED || !enable) return;
   lenis = new Lenis({
     duration: 1.1,
     easing: (t) => 1 - Math.pow(1 - t, 3), // easeOutCubic
@@ -118,7 +121,7 @@ async function init() {
   // small delay so the 100% reads, then reveal
   setTimeout(hideLoader, 350);
 
-  initSmoothScroll();
+  initSmoothScroll(engine.tier !== 'lo');
   // snap to top so the reveal starts on the first frame
   window.scrollTo(0, 0);
   if (lenis) lenis.scrollTo(0, { immediate: true });
@@ -249,14 +252,28 @@ function startScrub(engine, stage) {
     if (typeof engine.kick === 'function') engine.kick();
   });
 
-  // render loop — engine eases toward the scroll target each frame
+  // render loop — engine eases toward the scroll target each frame.
+  // Runtime quality guard: if frames are consistently slow (weak GPU we can't
+  // detect up front), step the pixel-ratio down so scrubbing stays smooth.
+  let last = performance.now(), slow = 0, seen = 0, steps = 0;
   const tick = () => {
     requestAnimationFrame(tick);
-    if (!heroActive) return; // hero off-screen → don't burn GPU on it
+    if (!heroActive) { last = performance.now(); return; } // hero off-screen → idle
+    const now = performance.now();
+    const dt = now - last; last = now;
     const changed = engine.update();
-    // sequence + videos return a texture to swap to; plain video returns a bool
     if (changed && changed !== true) stage.setTexture(changed);
     stage.render();
+
+    if (dt > 24) slow++;            // slower than ~42fps
+    if (++seen >= 90) {             // every ~1.5s of active frames
+      if (steps < 2 && slow > seen * 0.35) {
+        steps++;
+        stage.setDPR(Math.max(1, stage.maxDPR * 0.7));
+        console.info(`[perf] scrub slow → pixelRatio cap ↓ to ${stage.maxDPR.toFixed(2)}`);
+      }
+      slow = 0; seen = 0;
+    }
   };
   requestAnimationFrame(tick);
 }

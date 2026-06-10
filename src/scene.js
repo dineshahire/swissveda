@@ -80,6 +80,13 @@ export class Stage {
     this.resize();
   }
 
+  /** Runtime quality control: lower the pixel-ratio cap when FPS is poor. */
+  setDPR(cap) {
+    this.maxDPR = cap;
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, cap));
+    this.resize();
+  }
+
   resize() {
     const w = window.innerWidth;
     const h = window.innerHeight;

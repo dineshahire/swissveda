@@ -20,8 +20,8 @@ import { CONFIG } from './config.js';
 // Per-tier render cap (decode concurrency + DPR). Frame COUNT/res come from
 // CONFIG.sequence.tiers so the held set stays within a safe RAM budget.
 const PROFILES = {
-  hi: { MAXDPR: 2,   CONC: 12 },
-  lo: { MAXDPR: 1.5, CONC: 8 },
+  hi: { MAXDPR: 1.5, CONC: 12 },  // a video reel doesn't need 2× DPR; 1.5 halves fill cost
+  lo: { MAXDPR: 1.0, CONC: 8 },
 };
 
 function pickTier() {
