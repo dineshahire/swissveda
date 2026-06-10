@@ -88,8 +88,13 @@ export class Stage {
   }
 
   resize() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+    // Size to the canvas's ACTUAL displayed box, not window.innerWidth/Height.
+    // The sticky is 100svh; if that differs from innerHeight (mobile URL bar,
+    // some desktops) sizing to the window makes the framebuffer taller than the
+    // visible canvas → the frame renders offset with seams/bands. clientWidth/
+    // Height always matches what's on screen.
+    const w = this.canvas.clientWidth || window.innerWidth;
+    const h = this.canvas.clientHeight || window.innerHeight;
     const viewAspect = w / h;
 
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.maxDPR));
