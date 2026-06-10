@@ -77,14 +77,25 @@ function makeScrubber(video) {
     if (p && p.then) p.then(() => { video.pause(); video.currentTime = cur * video.duration; }).catch(() => {});
   };
 
+  const STEP = 1 / 15; // source is 15fps → don't seek finer than one frame
+  let lastT = -1;
   const tick = () => {
     requestAnimationFrame(tick);
     if (!active || !ready()) return;
     cur += (target - cur) * 0.15;
     if (Math.abs(target - cur) < 0.0004) cur = target;
     const t = cur * video.duration;
-    // don't stack seeks — only issue a new one when the last finished
-    if (!video.seeking) { try { video.currentTime = t; } catch {} }
+    // only seek when: last seek finished AND we've moved at least one frame.
+    // fastSeek (Safari/FF) jumps to the nearest keyframe instantly — and since
+    // the video is all-intra, every frame IS a keyframe, so backward scrubbing
+    // is as quick as forward. Chrome lacks fastSeek → fall back to currentTime.
+    if (!video.seeking && Math.abs(t - lastT) >= STEP) {
+      lastT = t;
+      try {
+        if (typeof video.fastSeek === 'function') video.fastSeek(t);
+        else video.currentTime = t;
+      } catch {}
+    }
   };
   requestAnimationFrame(tick);
 
