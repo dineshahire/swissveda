@@ -27,7 +27,7 @@ export class Stage {
 
     this.renderer = new THREE.WebGLRenderer({
       canvas,
-      antialias: true,
+      antialias: false, // fullscreen textured quad has no geometry edges → MSAA is pure cost
       alpha: false,
       powerPreference: 'high-performance',
     });

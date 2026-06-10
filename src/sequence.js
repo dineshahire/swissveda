@@ -221,6 +221,9 @@ export class SequenceEngine {
 
     const idx = Math.min(this.count - 1, Math.max(0, Math.round(this._cur * (this.count - 1))));
 
+    // settled on a frame with a full window + nothing pending → nothing to do
+    if (this._cur === this._target && idx === this.current && this._queue.length === 0 && this._active === 0) return null;
+
     // direction-aware prefetch: load most aggressively where the user is heading
     const dir = idx >= this._lastIdx ? 1 : -1;
     this._lastIdx = idx;

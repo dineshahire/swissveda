@@ -81,6 +81,9 @@ export class ClipScrubber {
     if (Math.abs(this._target - this._cur) < 0.0005) this._cur = this._target;
     const idx = Math.min(this.count - 1, Math.max(0, Math.round(this._cur * (this.count - 1))));
 
+    // settled with a full window + nothing pending → skip the per-frame work
+    if (this._cur === this._target && idx === this.current && this._queue.length === 0 && this._active === 0) return;
+
     const dir = idx >= this._lastIdx ? 1 : -1; this._lastIdx = idx;
     const lead = dir > 0 ? LEAD : TRAIL, trail = dir > 0 ? TRAIL : LEAD;
     this._queue.length = 0; this._queued.clear();

@@ -108,9 +108,9 @@ async function init() {
     return;
   }
 
-  // Apply the GPU unsharp pass only on the capable (hi) tier — keeps weak
-  // mobile GPUs out of the per-frame convolution so they stay smooth.
-  if (engine.tier === 'hi') canvas.classList.add('sharp');
+  // NOTE: the SVG unsharp pass (#scene.sharp) is intentionally NOT applied — a
+  // per-frame full-screen feConvolveMatrix is too GPU-heavy and made scrubbing
+  // lag. The cheap CSS colour grade stays; sharpness comes from the 1080p frames.
   stage.tuneTexture(texture);
   stage.setTexture(texture);
   stage.resize();
@@ -151,7 +151,7 @@ async function setupClip() {
   const clip = new ClipScrubber(el, CONFIG.clip);
   await clip.load();
 
-  // scrub the clip across the .clip-stage spacer's scroll progress
+  // scrub the clip across the .clip-stage spacer's pinned scroll progress
   ScrollTrigger.create({
     trigger: '.clip-stage',
     start: 'top top',
@@ -159,8 +159,21 @@ async function setupClip() {
     onUpdate: (self) => clip.scrub(self.progress),
   });
 
+  // separate activation window (a viewport early/late) so the render loop only
+  // runs near the clip — frames are warm before it's visible, idle otherwise.
+  let clipActive = false;
+  ScrollTrigger.create({
+    trigger: '.clip-stage',
+    start: 'top bottom',
+    end: 'bottom top',
+    onToggle: (self) => { clipActive = self.isActive; },
+  });
+
   // its own render loop — eases toward the scroll target each frame
-  const tick = () => { clip.update(); requestAnimationFrame(tick); };
+  const tick = () => {
+    requestAnimationFrame(tick);
+    if (clipActive) clip.update();
+  };
   requestAnimationFrame(tick);
 
   // keep the scrub mapping correct after layout shifts
@@ -207,10 +220,15 @@ function startScrub(engine, stage) {
   // NOTE: pinning is done with native CSS `position: sticky` on .sticky (see
   // style.css). ScrollTrigger here only reads scroll progress — using GSAP's
   // own pin on top of CSS sticky would fight it. .stage is the tall spacer.
+  // Only run the hero render loop while the film stage is actually on screen.
+  // Once you scroll into the content (hero covered by .content), rendering it is
+  // wasted GPU that competes with the clip reel — pausing keeps everything smooth.
+  let heroActive = true;
   ScrollTrigger.create({
     trigger: '.stage',
     start: 'top top',
     end: 'bottom bottom',
+    onToggle: (self) => { heroActive = self.isActive; },
     onUpdate: (self) => {
       if (self.progress > 0.002) endIntro(); // hand off from intro to scrub
       proxy.p = self.progress;
@@ -233,11 +251,12 @@ function startScrub(engine, stage) {
 
   // render loop — engine eases toward the scroll target each frame
   const tick = () => {
+    requestAnimationFrame(tick);
+    if (!heroActive) return; // hero off-screen → don't burn GPU on it
     const changed = engine.update();
     // sequence + videos return a texture to swap to; plain video returns a bool
     if (changed && changed !== true) stage.setTexture(changed);
     stage.render();
-    requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
 }
