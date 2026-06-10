@@ -2,25 +2,20 @@
 //  Image-sequence engine — the site's hero.
 //  Scroll-scrubbed frame reel rendered to a WebGL plane.
 //
-//  HOLD-ALL model (why scrubbing is smooth everywhere, both directions):
-//   • The reel is a SMALL set of frames (≈140–180) — few enough to decode the
-//     WHOLE thing into RAM once, up front, behind the loader.
-//   • After that, scrubbing does ZERO fetching/decoding/eviction — every frame
-//     swap is just `texture.image = alreadyDecodedBitmap`. So scrolling forward
-//     AND back is instant; there is nothing to lag on, even on low-end devices
-//     over a CDN. (The old on-demand window re-decoded evicted frames on
-//     scroll-back, which was the lag.)
-//   • A device tier picks resolution (720p desktop / 480p low) so RAM + decode
-//     time stay sane everywhere.
+//  SINGLE-TEXTURE HOLD-ALL (why it's smooth + flicker-free everywhere):
+//   • Decode the WHOLE reel into RAM once (ImageBitmaps) behind the loader.
+//   • Keep ONE GPU texture; per frame we just swap its .image. Only ~one frame
+//     ever lives on the GPU, so weak/Safari GPUs never run out of VRAM and
+//     never evict+re-upload mid-scroll (that eviction was the flash + lag).
+//   • Lighter resolution per tier keeps the per-frame upload tiny (≈1ms) so
+//     scrubbing is smooth forward AND back, even on low devices.
 // ─────────────────────────────────────────────────────────────────────────
 
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
 
-// Per-tier render cap (decode concurrency + DPR). Frame COUNT/res come from
-// CONFIG.sequence.tiers so the held set stays within a safe RAM budget.
 const PROFILES = {
-  hi: { MAXDPR: 1.5, CONC: 12 },  // a video reel doesn't need 2× DPR; 1.5 halves fill cost
+  hi: { MAXDPR: 1.5, CONC: 12 },
   lo: { MAXDPR: 1.0, CONC: 8 },
 };
 
@@ -33,15 +28,12 @@ function pickTier() {
   const coarse = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches;
   const smallScreen = typeof window !== 'undefined' && Math.min(window.innerWidth, window.innerHeight) <= 820;
 
-  // GPU probe — only TRUE software rasterizers count as weak (NOT "Mesa", which
-  // is the normal open-source driver for real Intel/AMD GPUs).
   let weakGPU = false;
   try {
     const c = document.createElement('canvas');
     const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
-    if (!gl) {
-      weakGPU = true;
-    } else {
+    if (!gl) weakGPU = true;
+    else {
       const dbg = gl.getExtension('WEBGL_debug_renderer_info');
       const r = dbg ? String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL)) : '';
       if (/swiftshader|llvmpipe|software|microsoft basic|basic render/i.test(r)) weakGPU = true;
@@ -69,15 +61,14 @@ export class SequenceEngine {
     this.maxDPR = p.MAXDPR;
     this.conc = p.CONC;
 
-    this.frames = new Array(this.count);   // idx -> ImageBitmap
-    this.textures = new Array(this.count); // idx -> THREE.Texture (pre-uploaded)
+    this.frames = new Array(this.count); // idx -> ImageBitmap (held in RAM)
     this.current = -1;
     this._target = 0;
     this._cur = 0;
     this.aspect = 16 / 9;
     this._warned = false;
 
-    console.info(`[sequence] tier=${this.tier} (${this.path}, ${this.count} frames, hold-all)`);
+    console.info(`[sequence] tier=${this.tier} (${this.path}, ${this.count} frames, single-texture)`);
   }
 
   _frameURL(i) {
@@ -89,8 +80,6 @@ export class SequenceEngine {
     try {
       const res = await fetch(this._frameURL(i));
       const blob = await res.blob();
-      // flipY (paired with tex.flipY=false): ImageBitmap uploads with opposite
-      // Y origin to HTMLImageElement, else the reel renders upside-down.
       return await createImageBitmap(blob, { imageOrientation: 'flipY' });
     } catch (err) {
       if (!this._warned) {
@@ -101,45 +90,35 @@ export class SequenceEngine {
     }
   }
 
-  _makeTexture(bmp) {
-    const tx = new THREE.Texture(bmp);
-    tx.flipY = false; // ImageBitmap decoded with imageOrientation:'flipY'
-    tx.colorSpace = THREE.SRGBColorSpace;
-    tx.minFilter = THREE.LinearFilter;
-    tx.magFilter = THREE.LinearFilter;
-    tx.generateMipmaps = false;
-    tx.needsUpdate = true; // upload happens once (here / via renderer.initTexture)
-    return tx;
-  }
-
-  /** Decode + build a GPU texture for EVERY frame up front; reports 0..1. */
+  /** Decode the whole reel into RAM up front; reports 0..1. */
   async load(onProgress) {
+    this.tex = new THREE.Texture();
+    this.tex.flipY = false;                 // bitmaps decoded with imageOrientation:'flipY'
+    this.tex.colorSpace = THREE.SRGBColorSpace;
+    this.tex.minFilter = THREE.LinearFilter;
+    this.tex.magFilter = THREE.LinearFilter;
+    this.tex.generateMipmaps = false;
+
     let done = 0, next = 0;
     const worker = async () => {
       while (next < this.count) {
         const i = next++;
-        const bmp = await this._decodeFrame(i);
-        this.frames[i] = bmp;
-        if (bmp) this.textures[i] = this._makeTexture(bmp);
+        this.frames[i] = await this._decodeFrame(i);
         done++;
         if (onProgress) onProgress(done / this.count);
       }
     };
     await Promise.all(Array.from({ length: Math.min(this.conc, this.count) }, worker));
 
-    const firstTx = this.textures.find(Boolean) || new THREE.Texture();
-    const firstBmp = this.frames.find(Boolean);
-    this.aspect = firstBmp ? firstBmp.width / firstBmp.height : 16 / 9;
-    this.current = this.textures[0] ? 0 : -1;
-    return { texture: this.textures[0] || firstTx, aspect: this.aspect };
+    const first = this.frames.find(Boolean) || null;
+    this.aspect = first ? first.width / first.height : 16 / 9;
+    if (first) { this.tex.image = this.frames[0] || first; this.tex.needsUpdate = true; this.current = 0; }
+    return { texture: this.tex, aspect: this.aspect };
   }
 
-  scrub(progress) {
-    this._target = Math.max(0, Math.min(progress, 1));
-  }
+  scrub(progress) { this._target = Math.max(0, Math.min(progress, 1)); }
 
-  /** Ease toward the target; return the (already-uploaded) texture for the frame.
-      No per-frame GPU upload → switching frames is essentially free. */
+  /** Ease toward target; swap the single texture's image to that frame. */
   update() {
     this._cur += (this._target - this._cur) * 0.18;
     if (Math.abs(this._target - this._cur) < 0.0005) this._cur = this._target;
@@ -147,21 +126,22 @@ export class SequenceEngine {
     const idx = Math.min(this.count - 1, Math.max(0, Math.round(this._cur * (this.count - 1))));
     if (idx === this.current) return null;
 
-    const tx = this.textures[idx];
-    if (!tx) return null; // frame failed to decode → keep current
+    const bmp = this.frames[idx];
+    if (!bmp) return null;
     this.current = idx;
-    return tx;
+    this.tex.image = bmp;
+    this.tex.needsUpdate = true; // re-upload this one small frame (~1ms)
+    return this.tex;
   }
 
-  kick() { /* pre-uploaded: nothing to re-prime */ }
+  kick() { /* nothing to re-prime */ }
 
-  /** Fallback autoplay (reduced-motion): cycle the frames on a timer. */
   autoplayLoop(onFrame) {
     let i = 0;
     this._timer = setInterval(() => {
       i = (i + 1) % this.count;
-      const tx = this.textures[i];
-      if (tx) onFrame(tx);
+      const bmp = this.frames[i];
+      if (bmp) { this.tex.image = bmp; this.tex.needsUpdate = true; onFrame(this.tex); }
     }, 1000 / 12);
   }
 }
