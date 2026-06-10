@@ -6,6 +6,8 @@
 //  tear, flash, or evict. Smooth forward AND back on every device.
 // ─────────────────────────────────────────────────────────────────────────
 
+const CACHE_VER = 'c1'; // bump whenever frame sets are re-exported
+
 export function pickTier() {
   const nav = typeof navigator !== 'undefined' ? navigator : {};
   const conn = nav.connection || {};
@@ -50,7 +52,9 @@ export class CanvasScrubber {
 
   _url(i) {
     const n = String(this.cfg.start + i).padStart(this.cfg.pad, '0');
-    return `${this.cfg.path}${n}.${this.cfg.ext}`;
+    // ?v busts the immutable CDN/browser cache when a frame set is re-exported
+    // under the same filenames (else stale old frames mix in → looks like overlap)
+    return `${this.cfg.path}${n}.${this.cfg.ext}?v=${CACHE_VER}`;
   }
 
   async _decode(i) {
