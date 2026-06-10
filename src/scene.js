@@ -88,13 +88,14 @@ export class Stage {
   }
 
   resize() {
-    // Size to the canvas's ACTUAL displayed box, not window.innerWidth/Height.
-    // The sticky is 100svh; if that differs from innerHeight (mobile URL bar,
-    // some desktops) sizing to the window makes the framebuffer taller than the
-    // visible canvas → the frame renders offset with seams/bands. clientWidth/
-    // Height always matches what's on screen.
-    const w = this.canvas.clientWidth || window.innerWidth;
-    const h = this.canvas.clientHeight || window.innerHeight;
+    // Measure the CANVAS'S PARENT (.sticky) — it has no CSS transform, so its
+    // box is stable even while the intro animates a scale() on the canvas. Sizing
+    // to the window (or to the transformed canvas) is what produced the offset
+    // seams / inset double-frame. Buffer now always matches the displayed box.
+    const parent = this.canvas.parentElement;
+    const rect = parent ? parent.getBoundingClientRect() : { width: window.innerWidth, height: window.innerHeight };
+    const w = Math.round(rect.width) || window.innerWidth;
+    const h = Math.round(rect.height) || window.innerHeight;
     const viewAspect = w / h;
 
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.maxDPR));
