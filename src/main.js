@@ -62,16 +62,19 @@ function hideLoader() {
 }
 
 // ── video scrubber: eases video.currentTime toward the scroll target ─────────
+const COARSE = window.matchMedia('(pointer: coarse)').matches;
 function makeScrubber(video) {
   let target = 0, cur = 0, active = true, primed = false;
   const ready = () => video.readyState >= 1 && video.duration > 0;
 
-  // iOS/Safari often need one play()/pause() before currentTime seeking works.
+  // Only TOUCH devices need a play()/pause() to unlock currentTime seeking;
+  // on desktop calling play() just makes the clip lurch forward on first scroll
+  // (the "wrong frame on open" bug). Re-seek to target right after.
   const prime = () => {
-    if (primed) return; primed = true;
+    if (primed || !COARSE) { primed = true; return; }
+    primed = true;
     const p = video.play();
-    if (p && p.then) p.then(() => video.pause()).catch(() => {});
-    else { try { video.pause(); } catch {} }
+    if (p && p.then) p.then(() => { video.pause(); video.currentTime = cur * video.duration; }).catch(() => {});
   };
 
   const tick = () => {
@@ -113,6 +116,7 @@ function waitForVideo(video, onProgress) {
 
 async function init() {
   await waitForVideo(heroVideo, setProgress);
+  try { heroVideo.currentTime = 0; } catch {} // always open on the first frame
   setProgress(1);
   setTimeout(hideLoader, 350);
 
