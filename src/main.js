@@ -120,22 +120,6 @@ async function init() {
 
   setupContentReveals();
   setupClip();
-  setupAnchorScroll();
-}
-
-// ── smooth in-page anchor scrolling via Lenis (falls back to native) ──────────
-function setupAnchorScroll() {
-  document.querySelectorAll('a[href^="#"]').forEach((a) => {
-    a.addEventListener('click', (e) => {
-      const id = a.getAttribute('href');
-      if (!id || id.length < 2) return;
-      const target = document.querySelector(id);
-      if (!target) return;
-      e.preventDefault();
-      if (lenis) lenis.scrollTo(target, { duration: 1.2 });
-      else target.scrollIntoView({ behavior: 'smooth' });
-    });
-  });
 }
 
 // ── secondary scroll-scrubbed clip in a content box ──────────────────────────
@@ -262,50 +246,13 @@ function updateCaptions(p) {
 
 // ── reveal content sections on scroll ────────────────────────────────────────
 function setupContentReveals() {
-  // generic fade-up for headings, copy, certs and footer blocks
-  const fadeUp = document.querySelectorAll(
-    '.eyebrow--center, .swiss-made, .tradition__copy p, .cert, .certs__note, ' +
-    '.footer__brand-col, .footer__menu, .footer__contact'
-  );
-  fadeUp.forEach((el, i) => {
+  const targets = document.querySelectorAll('.section h2, .lede, .card, .stores, .btn, .footer__cols, .footer__brand');
+  targets.forEach((el) => {
     gsap.fromTo(el,
       { opacity: 0, y: 40 },
       {
-        opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', delay: (i % 4) * 0.06,
-        scrollTrigger: { trigger: el, start: 'top 88%', once: true },
-      });
-  });
-
-  // product rows: packshot slides in from its side, info eases up + staggers
-  document.querySelectorAll('.product').forEach((row) => {
-    const reversed = row.classList.contains('product--reverse');
-    const media = row.querySelector('.product__media');
-    const shot = row.querySelector('.product__shot');
-    const info = row.querySelectorAll('.product__info > *');
-
-    // packshot wipes in from its side (clip-path) + soft fade → editorial reveal
-    if (shot) {
-      gsap.fromTo(shot,
-        { opacity: 0, clipPath: reversed ? 'inset(0 0 0 100%)' : 'inset(0 100% 0 0)' },
-        {
-          opacity: 1, clipPath: 'inset(0 0 0 0)', duration: 1.1, ease: 'power3.out',
-          scrollTrigger: { trigger: row, start: 'top 80%', once: true },
-        });
-    }
-    // gentle parallax: the packshot drifts as the row scrolls past → depth
-    if (media && !REDUCED) {
-      gsap.fromTo(media,
-        { yPercent: 10 },
-        {
-          yPercent: -10, ease: 'none',
-          scrollTrigger: { trigger: row, start: 'top bottom', end: 'bottom top', scrub: true },
-        });
-    }
-    gsap.fromTo(info,
-      { opacity: 0, y: 28 },
-      {
-        opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.05,
-        scrollTrigger: { trigger: row, start: 'top 80%', once: true },
+        opacity: 1, y: 0, duration: 1, ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 85%', once: true },
       });
   });
 }
