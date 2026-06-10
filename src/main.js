@@ -105,22 +105,25 @@ function makeScrubber(video) {
   };
 }
 
-// wait until a video has enough data (or a timeout) so the reveal isn't blank
+// Wait until the video is FULLY buffered (progress bar runs to a real 100%),
+// then reveal — so scrubbing never stalls on un-downloaded footage.
 function waitForVideo(video, onProgress) {
   return new Promise((resolve) => {
     let done = false;
-    const finish = () => { if (!done) { done = true; resolve(); } };
-    if (video.readyState >= 2) return finish();
-    const onProg = () => {
-      if (video.buffered.length && video.duration) {
-        onProgress(Math.min(0.95, video.buffered.end(0) / video.duration));
+    const finish = () => { if (!done) { done = true; onProgress(1); resolve(); } };
+    const check = () => {
+      if (video.duration && video.buffered.length) {
+        const end = video.buffered.end(video.buffered.length - 1);
+        const p = end / video.duration;
+        onProgress(Math.min(0.99, p));
+        if (p >= 0.999) finish(); // whole clip downloaded → safe to enter
       }
     };
-    video.addEventListener('progress', onProg);
-    video.addEventListener('loadeddata', finish, { once: true });
-    video.addEventListener('canplay', finish, { once: true });
+    video.addEventListener('progress', check);
+    video.addEventListener('loadeddata', check, { once: true });
+    video.addEventListener('canplaythrough', check);
     video.addEventListener('error', finish, { once: true });
-    setTimeout(finish, 8000); // never hang the loader
+    setTimeout(finish, 30000); // safety: never hang forever on a flaky network
     video.load();
   });
 }
