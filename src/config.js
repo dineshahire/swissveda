@@ -22,7 +22,7 @@ export const CONFIG = {
     start: 1,      // first frame index
     tiers: {
       hi: { path: 'frames-dinesh/',    count: 200 }, // 720p HD, pre-uploaded (~740MB VRAM) — smooth both ways
-      lo: { path: 'frames-dinesh-sd/', count: 200 }, // 480p — low-end devices
+      lo: { path: 'frames-dinesh-sd/', count: 300 }, // 480p — low-end devices
     },
   },
 

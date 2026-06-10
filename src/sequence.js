@@ -48,13 +48,10 @@ function pickTier() {
     }
   } catch { weakGPU = true; }
 
-  // Bias toward the light tier — better a touch softer than laggy on a weak
-  // machine. Only clearly-capable devices (≥6 cores AND ≥8GB, or unknown but
-  // desktop-pointer) stay on hi.
   const lowEnd =
-    weakGPU || slowNet || coarse ||                       // any touch device → lo
-    (typeof mem === 'number' && mem <= 4) ||              // ≤4GB RAM → lo
-    (typeof cores === 'number' && cores <= 4);            // ≤4 cores → lo
+    weakGPU || slowNet || (coarse && smallScreen) ||
+    (typeof mem === 'number' && mem <= 2) ||
+    (typeof cores === 'number' && cores <= 2);
 
   return lowEnd ? 'lo' : 'hi';
 }
