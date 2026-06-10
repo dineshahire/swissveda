@@ -110,8 +110,14 @@ export class Stage {
     const rect = parent ? parent.getBoundingClientRect() : { width: window.innerWidth, height: window.innerHeight };
     const w = Math.round(rect.width) || window.innerWidth;
     const h = Math.round(rect.height) || window.innerHeight;
-    const viewAspect = w / h;
 
+    // Only act on a REAL size change. The ResizeObserver / svh URL-bar jiggle
+    // fires constantly during scroll; re-running setSize each time flashes a
+    // wrongly-scaled frame (the "double video"). Same size → do nothing.
+    if (w === this._w && h === this._h) return;
+    this._w = w; this._h = h;
+
+    const viewAspect = w / h;
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.maxDPR));
     this.renderer.setSize(w, h, false);
 
