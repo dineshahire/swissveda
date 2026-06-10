@@ -291,3 +291,12 @@ a { color: inherit; text-decoration: none; }
 
 /* WebGL-unavailable fallback: static first-frame poster fills the hero */
 .poster-fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* ── Real <video> hero + clip (scroll-scrubbed) ── */
+.hero-video {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  transform-origin: center center; will-change: transform;
+  /* same warm grade as before, cheap */
+  filter: contrast(1.06) saturate(1.1) sepia(0.04);
+}
+.clip-video { display: block; width: 100%; height: 100%; object-fit: cover; }
