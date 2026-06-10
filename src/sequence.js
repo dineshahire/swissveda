@@ -69,8 +69,7 @@ export class SequenceEngine {
     this.maxDPR = p.MAXDPR;
     this.conc = p.CONC;
 
-    this.frames = new Array(this.count);   // idx -> ImageBitmap
-    this.textures = new Array(this.count); // idx -> THREE.Texture (pre-uploaded)
+    this.frames = new Array(this.count); // idx -> ImageBitmap (all held)
     this.current = -1;
     this._target = 0;
     this._cur = 0;
@@ -101,45 +100,33 @@ export class SequenceEngine {
     }
   }
 
-  _makeTexture(bmp) {
-    const tx = new THREE.Texture(bmp);
-    tx.flipY = false; // ImageBitmap decoded with imageOrientation:'flipY'
-    tx.colorSpace = THREE.SRGBColorSpace;
-    tx.minFilter = THREE.LinearFilter;
-    tx.magFilter = THREE.LinearFilter;
-    tx.generateMipmaps = false;
-    tx.needsUpdate = true; // upload happens once (here / via renderer.initTexture)
-    return tx;
-  }
-
-  /** Decode + build a GPU texture for EVERY frame up front; reports 0..1. */
+  /** Decode the WHOLE reel up front (concurrency-capped); reports 0..1. */
   async load(onProgress) {
+    this.tex = new THREE.Texture();
+    this.tex.flipY = false;
+
     let done = 0, next = 0;
     const worker = async () => {
       while (next < this.count) {
         const i = next++;
-        const bmp = await this._decodeFrame(i);
-        this.frames[i] = bmp;
-        if (bmp) this.textures[i] = this._makeTexture(bmp);
+        this.frames[i] = await this._decodeFrame(i);
         done++;
         if (onProgress) onProgress(done / this.count);
       }
     };
     await Promise.all(Array.from({ length: Math.min(this.conc, this.count) }, worker));
 
-    const firstTx = this.textures.find(Boolean) || new THREE.Texture();
-    const firstBmp = this.frames.find(Boolean);
-    this.aspect = firstBmp ? firstBmp.width / firstBmp.height : 16 / 9;
-    this.current = this.textures[0] ? 0 : -1;
-    return { texture: this.textures[0] || firstTx, aspect: this.aspect };
+    const first = this.frames.find(Boolean) || null;
+    this.aspect = first ? first.width / first.height : 16 / 9;
+    if (first) { this.tex.image = this.frames[0] || first; this.tex.needsUpdate = true; this.current = 0; }
+    return { texture: this.tex, aspect: this.aspect };
   }
 
   scrub(progress) {
     this._target = Math.max(0, Math.min(progress, 1));
   }
 
-  /** Ease toward the target; return the (already-uploaded) texture for the frame.
-      No per-frame GPU upload → switching frames is essentially free. */
+  /** Ease toward the scroll target and swap to that frame. Pure swap → no lag. */
   update() {
     this._cur += (this._target - this._cur) * 0.18;
     if (Math.abs(this._target - this._cur) < 0.0005) this._cur = this._target;
@@ -147,21 +134,23 @@ export class SequenceEngine {
     const idx = Math.min(this.count - 1, Math.max(0, Math.round(this._cur * (this.count - 1))));
     if (idx === this.current) return null;
 
-    const tx = this.textures[idx];
-    if (!tx) return null; // frame failed to decode → keep current
+    const bmp = this.frames[idx];
+    if (!bmp) return null; // a frame that failed to decode → keep current
     this.current = idx;
-    return tx;
+    this.tex.image = bmp;
+    this.tex.needsUpdate = true;
+    return this.tex;
   }
 
-  kick() { /* pre-uploaded: nothing to re-prime */ }
+  kick() { /* hold-all: nothing to re-prime */ }
 
-  /** Fallback autoplay (reduced-motion): cycle the frames on a timer. */
+  /** Fallback autoplay (reduced-motion): cycle the held frames on a timer. */
   autoplayLoop(onFrame) {
     let i = 0;
     this._timer = setInterval(() => {
       i = (i + 1) % this.count;
-      const tx = this.textures[i];
-      if (tx) onFrame(tx);
+      const bmp = this.frames[i];
+      if (bmp) { this.tex.image = bmp; this.tex.needsUpdate = true; onFrame(this.tex); }
     }, 1000 / 12);
   }
 }
