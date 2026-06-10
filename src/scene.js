@@ -95,15 +95,16 @@ export class Stage {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.maxDPR));
     this.renderer.setSize(w, h, false);
 
-    // COVER: scale the unit plane so the media fills the 2×2 frustum without
-    // distortion, cropping the overflowing axis (just like object-fit: cover).
+    // CONTAIN: scale the unit plane so the WHOLE media frame is visible (no
+    // cropping), letterboxed against the black stage bg — like object-fit:
+    // contain. Shows the complete video instead of a cropped half.
     let sx = 2, sy = 2;
     if (viewAspect > this.mediaAspect) {
-      // viewport wider than media → match width, overflow height
-      sy = 2 * (viewAspect / this.mediaAspect);
-    } else {
-      // viewport taller than media → match height, overflow width
+      // viewport wider than media → fit height, bars left/right
       sx = 2 * (this.mediaAspect / viewAspect);
+    } else {
+      // viewport taller than media → fit width, bars top/bottom
+      sy = 2 * (viewAspect / this.mediaAspect);
     }
     this.mesh.scale.set(sx, sy, 1);
 
