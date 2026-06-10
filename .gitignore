@@ -8,3 +8,7 @@ _backup/
 *.mp4
 *.zip
 *.webm
+
+# …except the web-optimized scroll videos that the site actually serves
+!public/videos/
+!public/videos/*.mp4
