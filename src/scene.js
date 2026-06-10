@@ -63,15 +63,22 @@ export class Stage {
   }
 
   setTexture(texture) {
-    // Only do the expensive work when the texture OBJECT actually changes.
-    // The sequence engine reuses one texture and just swaps its .image +
-    // bumps .needsUpdate per frame, so calling this every scrubbed frame must
-    // NOT re-tune the texture or flag material.needsUpdate (that forces a
-    // shader-program recompile every frame → GPU churn / scroll jank).
+    // Frames are pre-built, pre-tuned, pre-uploaded textures. Swapping the map
+    // to an already-resident texture is essentially free — no upload, no
+    // recompile. Only the FIRST assignment flags material.needsUpdate (to bind
+    // the map uniform once).
     if (this.material.map === texture) return;
-    this.tuneTexture(texture); // first assignment only: match quality settings
+    const first = !this.material.map;
     this.material.map = texture;
-    this.material.needsUpdate = true;
+    if (first) this.material.needsUpdate = true;
+  }
+
+  /** Upload all frame textures to the GPU now (during the loader) so scrubbing
+      never pays an upload cost. */
+  preupload(textures) {
+    for (const t of textures) {
+      if (t) { try { this.renderer.initTexture(t); } catch {} }
+    }
   }
 
   /** Lets sequence mode update the media aspect if frames differ from video. */
