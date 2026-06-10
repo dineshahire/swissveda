@@ -14,6 +14,9 @@ import { CONFIG } from './config.js';
 import { CanvasScrubber, pickTier } from './scrubber.js';
 
 gsap.registerPlugin(ScrollTrigger);
+// Fewer ScrollTrigger recalcs: ignore the mobile URL-bar resize storm, and snap
+// work to the end of fast fling-scrolls instead of every intermediate frame.
+ScrollTrigger.config({ ignoreMobileResize: true });
 
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 window.scrollTo(0, 0);
@@ -23,15 +26,25 @@ const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let lenis = null;
 function initSmoothScroll(enable = true) {
   if (REDUCED || !enable) return;
+  // lerp (frame-rate-independent) feels "attached to the finger" on trackpads —
+  // duration-based easing floats; lerp tracks input. 0.1 ≈ Apple's feel.
   lenis = new Lenis({
-    duration: 1.1,
-    easing: (t) => 1 - Math.pow(1 - t, 3),
+    lerp: 0.1,
     smoothWheel: true,
-    syncTouch: false,
+    wheelMultiplier: 1,
+    syncTouch: false,          // native touch on mobile = lighter, no fight
+    touchInertiaMultiplier: 12,
   });
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((time) => lenis.raf(time * 1000));
   gsap.ticker.lagSmoothing(0);
+
+  // Debounced refresh on real resize (not the scroll-driven svh jiggle).
+  let rt;
+  window.addEventListener('resize', () => {
+    clearTimeout(rt);
+    rt = setTimeout(() => ScrollTrigger.refresh(), 200);
+  });
 }
 
 const $ = (sel) => document.querySelector(sel);
@@ -118,6 +131,8 @@ function setupHeroScroll(hero) {
     trigger: '.stage',
     start: 'top top',
     end: 'bottom bottom',
+    fastScrollEnd: true,        // settle cleanly after fast flings (no overrun jitter)
+    invalidateOnRefresh: true,
     onToggle: (self) => { active = self.isActive; },
     onUpdate: (self) => {
       if (self.progress > 0.002) endIntro();

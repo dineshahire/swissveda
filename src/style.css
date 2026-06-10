@@ -300,3 +300,9 @@ a { color: inherit; text-decoration: none; }
   filter: contrast(1.06) saturate(1.1) sepia(0.04);
 }
 .clip-video { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* ── GPU-layer hints: promote animated elements, avoid repaints (60fps) ── */
+#scene, #clip-canvas { transform: translateZ(0); backface-visibility: hidden; }
+.caption, .section h2, .lede, .card, .btn, .footer__cols, .footer__brand {
+  will-change: transform, opacity;
+}
