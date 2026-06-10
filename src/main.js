@@ -12,6 +12,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { CONFIG } from './config.js';
 import { CanvasScrubber, pickTier } from './scrubber.js';
+import { initFlourishes } from './flourishes.js';
 
 gsap.registerPlugin(ScrollTrigger);
 // Fewer ScrollTrigger recalcs: ignore the mobile URL-bar resize storm, and snap
@@ -101,6 +102,7 @@ async function init() {
 
   setupClip();
   setupContentReveals();
+  initFlourishes({ canvas, sticky: canvas.parentElement, reduced: REDUCED });
   ScrollTrigger.refresh();
 }
 
@@ -192,7 +194,8 @@ function updateCaptions(p) {
 }
 
 function setupContentReveals() {
-  const targets = document.querySelectorAll('.section h2, .lede, .card, .stores, .btn, .footer__cols, .footer__brand');
+  // NOTE: .section h2 handled by split-text reveal in flourishes.js
+  const targets = document.querySelectorAll('.lede, .card, .stores, .btn, .footer__cols, .footer__brand');
   targets.forEach((el) => {
     gsap.fromTo(el,
       { opacity: 0, y: 40 },
