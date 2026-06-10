@@ -94,7 +94,19 @@ async function init() {
 
   // build the Three.js stage now that we know the media aspect ratio.
   // engine.maxDPR caps render resolution per device tier (lower on phones).
-  const stage = new Stage(canvas, { aspect, maxDPR: engine.maxDPR ?? 2 });
+  // If WebGL is unavailable (very old / locked-down device), fall back to a
+  // static poster of the first frame so the site still WORKS instead of blanking.
+  let stage;
+  try {
+    stage = new Stage(canvas, { aspect, maxDPR: engine.maxDPR ?? 2 });
+  } catch (err) {
+    console.warn('WebGL unavailable → static poster fallback:', err);
+    posterFallback(canvas, engine);
+    hideLoader();
+    setupContentReveals();
+    setupClip();
+    return;
+  }
 
   // Apply the GPU unsharp pass only on the capable (hi) tier — keeps weak
   // mobile GPUs out of the per-frame convolution so they stay smooth.
@@ -120,6 +132,16 @@ async function init() {
 
   setupContentReveals();
   setupClip();
+}
+
+// ── static poster when WebGL can't run (graceful degrade, no blank screen) ────
+function posterFallback(canvas, engine) {
+  canvas.style.display = 'none';
+  const poster = document.createElement('img');
+  poster.src = engine._frameURL(0);
+  poster.alt = '';
+  poster.className = 'poster-fallback';
+  canvas.parentElement.appendChild(poster);
 }
 
 // ── secondary scroll-scrubbed clip in a content box ──────────────────────────

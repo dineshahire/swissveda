@@ -38,7 +38,23 @@ function pickTier() {
   const smallScreen = typeof window !== 'undefined' &&
     Math.min(window.innerWidth, window.innerHeight) <= 820;
 
+  // GPU probe: a software renderer (SwiftShader / llvmpipe / Microsoft Basic)
+  // means no real GPU → the hi reel will crawl. Force the light tier.
+  let weakGPU = false;
+  try {
+    const c = document.createElement('canvas');
+    const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
+    if (!gl) {
+      weakGPU = true; // no WebGL at all
+    } else {
+      const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+      const r = dbg ? String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL)) : '';
+      if (/swiftshader|software|llvmpipe|microsoft basic|mesa/i.test(r)) weakGPU = true;
+    }
+  } catch { weakGPU = true; }
+
   const lowEnd =
+    weakGPU ||
     slowNet ||
     (typeof mem === 'number' && mem <= 4) ||
     (typeof cores === 'number' && cores <= 4) ||
@@ -146,10 +162,14 @@ export class SequenceEngine {
     // Decode a starter run sequentially so frame 0 is ready and the first
     // stretch of scroll has zero hitch. Rest stream in on demand.
     const PRELOAD = Math.min(this.PRELOAD, this.count);
-    for (let i = 0; i < PRELOAD; i++) {
-      await this._decode(i);
-      if (onProgress) onProgress((i + 1) / PRELOAD);
-    }
+    // Decode the opening frames in PARALLEL (not one-by-one) so a slow disk/CDN
+    // can't make the loader sit there looking broken. Each decode is also raced
+    // against an 8s timeout so a single stalled fetch never freezes startup.
+    let done = 0;
+    const withTimeout = (p) => Promise.race([p, new Promise((r) => setTimeout(r, 8000))]);
+    await Promise.all(Array.from({ length: PRELOAD }, (_, i) =>
+      withTimeout(this._decode(i)).then(() => { done++; if (onProgress) onProgress(done / PRELOAD); })
+    ));
     const first = this.bitmaps.get(0);
     this.aspect = first ? first.width / first.height : 16 / 9;
     if (first) { this.tex.image = first; this.tex.needsUpdate = true; }

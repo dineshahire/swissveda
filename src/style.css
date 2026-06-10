@@ -288,3 +288,6 @@ a { color: inherit; text-decoration: none; }
   .clip-stage { height: 200vh; }
 }
 
+
+/* WebGL-unavailable fallback: static first-frame poster fills the hero */
+.poster-fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
