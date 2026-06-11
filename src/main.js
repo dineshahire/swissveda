@@ -12,6 +12,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { CONFIG } from './config.js';
 import { CanvasScrubber, pickTier } from './scrubber.js';
+import { mountLoaderLottie } from './lottie.js';
 
 gsap.registerPlugin(ScrollTrigger);
 // Fewer ScrollTrigger recalcs: ignore the mobile URL-bar resize storm, and snap
@@ -68,8 +69,10 @@ function setProgress(p) {
   fillEl.style.width = pct + '%';
   pctEl.textContent = pct;
 }
+const loaderAnim = mountLoaderLottie(document.getElementById('loader-lottie'));
 function hideLoader() {
   loaderEl.classList.add('is-hidden');
+  setTimeout(() => loaderAnim?.destroy(), 900); // after the fade completes
   gsap.from('.ui--header', { y: -30, opacity: 0, duration: 1, ease: 'power3.out', delay: 0.1 });
 }
 

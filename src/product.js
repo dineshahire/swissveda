@@ -3,6 +3,16 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { PRODUCTS, ORDER } from './products-data.js';
+import { mountLoaderLottie } from './lottie.js';
+
+// load overlay: lottie until the hero image is ready (or 2.5s cap), then fade
+const pdpLoader = document.getElementById('pdp-loader');
+const pdpAnim = mountLoaderLottie(document.getElementById('pdp-lottie'));
+function hidePdpLoader() {
+  if (!pdpLoader || pdpLoader.classList.contains('is-hidden')) return;
+  pdpLoader.classList.add('is-hidden');
+  setTimeout(() => pdpAnim?.destroy(), 700);
+}
 
 gsap.registerPlugin(ScrollTrigger);
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -34,6 +44,9 @@ set('#p-final', `Add to cart — ${p.price}`);
 const img = document.querySelector('#p-img');
 img.src = p.img; img.alt = `VK Swiss ${p.name}`;
 document.querySelector('#p-orb').src = p.img;
+// reveal the page once the hero shot is decoded (capped so it never hangs)
+img.decode ? img.decode().then(hidePdpLoader, hidePdpLoader) : img.addEventListener('load', hidePdpLoader);
+setTimeout(hidePdpLoader, 2500);
 
 // sticky buy bar
 const shortName = p.name.replace(/^Natural\s+/i, '');

@@ -331,3 +331,6 @@ a { color: inherit; text-decoration: none; }
 }
 .nav-dd__menu a::after { display: none; }
 .nav-dd__menu a:hover { background: rgba(255,255,255,0.08); color: var(--gold-soft); }
+
+/* lottie loader animation (home loading screen) */
+.loader__lottie { width: 96px; height: 96px; margin: 0 auto 0.6rem; }
