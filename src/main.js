@@ -104,6 +104,18 @@ async function init() {
 
   setupClip();
   setupContentReveals();
+
+  // header readability: white over the dark film, ink once the cream content
+  // is under it
+  const header = document.querySelector('.ui--header');
+  ScrollTrigger.create({
+    trigger: '.content',
+    start: 'top 64px',
+    endTrigger: '.section--footer', // footer is dark again → back to white there
+    end: 'top 64px',
+    onToggle: (self) => header.classList.toggle('on-light', self.isActive),
+  });
+
   ScrollTrigger.refresh();
 }
 
