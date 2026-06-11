@@ -7,8 +7,8 @@ export default defineConfig({
   server: {
     host: true,
     open: true,
-    port: 5173,        // this project always runs on 5173
-    strictPort: true,  // if 5173 is taken, fail loudly instead of drifting to 5174
+    port: 5180,        // dev port
+    strictPort: false, // if taken, auto-pick the next free port instead of erroring
   },
   build: {
     target: 'es2020',
