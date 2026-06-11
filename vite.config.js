@@ -14,6 +14,10 @@ export default defineConfig({
     target: 'es2020',
     assetsInlineLimit: 0, // never inline media
     rollupOptions: {
+      input: {
+        main: 'index.html',
+        shilajit: 'shilajit.html', // product detail page
+      },
       output: {
         // split the heavy libs into their own cacheable chunk so the app code
         // chunk stays small and the 500kB warning is a real signal, not noise.
