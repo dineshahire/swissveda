@@ -7,84 +7,124 @@
   <meta name="description" content="VK Swiss — Ayurvedic actives in 100% pure Swiss ghee. 30 capsules." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 </head>
 <body class="pdp">
 
-  <header class="pdp-header">
-    <a class="pdp-brand" href="/">VK&nbsp;SWISS</a>
-    <nav class="pdp-nav" id="pdp-nav"><!-- product links injected --></nav>
-    <a class="pdp-cart" href="#buy">Shop</a>
+  <header class="nav">
+    <a class="nav__brand" href="/">VK<span>SWISS</span></a>
+    <div class="nav__mid" id="pdp-nav"></div>
+    <a class="nav__cart" href="#buy">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M6 6 5 3H2"/></svg>
+      Cart
+    </a>
   </header>
 
+  <!-- sticky buy bar (revealed on scroll) -->
+  <div class="buybar" id="buybar">
+    <div class="buybar__l"><img id="bar-img" src="" alt="" /><div><strong id="bar-name"></strong><span id="bar-price"></span></div></div>
+    <button class="btn btn--solid" data-magnetic>Add to cart</button>
+  </div>
+
   <main>
+    <!-- HERO -->
     <section class="hero" id="buy">
       <div class="hero__media reveal">
-        <span class="hero__badge">NEW</span>
-        <div class="hero__glow"></div>
-        <img id="p-img" src="" alt="" />
+        <div class="hero__card">
+          <span class="hero__badge">NEW</span>
+          <img id="p-img" src="" alt="" />
+        </div>
       </div>
+
       <div class="hero__info">
-        <p class="eyebrow reveal" id="p-eyebrow">Ayurvedic</p>
+        <span class="pill reveal" id="p-eyebrow">Ayurvedic</span>
         <h1 class="reveal" id="p-name">Natural</h1>
         <p class="hero__sub reveal" id="p-sub">in 100% Natural Swiss Ghee</p>
-        <div class="hero__meta reveal"><span>30 capsules</span><i></i><span>1 / day</span><i></i><span>Made in Switzerland</span></div>
+        <div class="rating reveal">★★★★★ <span>4.9 · 212 reviews</span></div>
         <p class="hero__lede reveal" id="p-lede"></p>
-        <div class="price reveal"><span class="price__now" id="p-price">CHF 49</span><span class="price__note">free shipping · 30-day promise</span></div>
-        <div class="hero__cta reveal">
-          <button class="btn btn--solid" data-magnetic>Add to cart</button>
-          <button class="btn btn--ghost" data-magnetic>Subscribe &amp; save 15%</button>
+
+        <div class="buy reveal">
+          <div class="buy__price"><span id="p-price">CHF 49</span><small>30 capsules · 1/day</small></div>
+          <div class="buy__actions">
+            <button class="btn btn--solid" data-magnetic id="p-final">Add to cart</button>
+            <button class="btn btn--ghost" data-magnetic>Subscribe −15%</button>
+          </div>
         </div>
-        <p class="swiss-line reveal"><span class="swiss-cross">✚</span> Tested by an accredited Swiss laboratory</p>
+
+        <ul class="trust reveal">
+          <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l7 3v5c0 4.4-3 8.3-7 10-4-1.7-7-5.6-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg> Swiss lab-tested</li>
+          <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12h18M12 3v18"/></svg> 100% natural</li>
+          <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 13l4 4L19 7"/></svg> 30-day promise</li>
+        </ul>
       </div>
     </section>
 
-    <section class="props">
-      <article class="prop reveal"><h2 id="p-self-title">Active</h2><ul id="p-self"></ul></article>
-      <span class="props__plus" aria-hidden="true">+</span>
-      <article class="prop reveal"><h2>Swiss Ghee</h2><ul id="p-ghee"></ul></article>
+    <!-- WHY / bento -->
+    <section class="why">
+      <div class="why__head reveal">
+        <span class="pill pill--ghost">Why it works</span>
+        <h2>Two actives, perfectly paired</h2>
+      </div>
+      <div class="bento">
+        <article class="card card--accent reveal">
+          <div class="card__icon">✦</div>
+          <h3 id="p-self-title">Active</h3>
+          <ul id="p-self"></ul>
+        </article>
+        <article class="card reveal">
+          <div class="card__icon">◦</div>
+          <h3>Swiss Ghee</h3>
+          <ul id="p-ghee"></ul>
+        </article>
+      </div>
     </section>
 
+    <!-- COMBO + stats -->
     <section class="combo" id="combo">
-      <p class="eyebrow eyebrow--c reveal">The unique combination</p>
-      <h2 class="combo__title reveal" id="p-combo-title">Active &amp; Swiss Ghee</h2>
-      <div class="combo__row">
-        <figure class="orb orb--ghee reveal"><div class="orb__img"></div><figcaption>100% Swiss Ghee<br /><small>origin · Swiss milk</small></figcaption></figure>
-        <span class="combo__plus reveal">+</span>
-        <figure class="orb reveal"><img id="p-orb" src="" alt="" /><figcaption id="p-orb-cap">Active<br /><small>Ayurvedic origin</small></figcaption></figure>
+      <div class="why__head reveal">
+        <span class="pill pill--ghost">The blend</span>
+        <h2 id="p-combo-title">Active &amp; Swiss Ghee</h2>
+      </div>
+      <div class="orbs">
+        <figure class="orb orb--ghee reveal"><div class="orb__img"></div><figcaption>Swiss Ghee<br><small>origin · Swiss milk</small></figcaption></figure>
+        <span class="orbs__plus reveal">+</span>
+        <figure class="orb reveal"><img id="p-orb" src="" alt="" /><figcaption id="p-orb-cap">Active</figcaption></figure>
       </div>
       <div class="stats">
-        <div class="stat reveal"><span class="stat__n" data-count="4">4×</span><span class="stat__l">more effective</span></div>
-        <div class="stat reveal"><span class="stat__n" data-count="85">85%</span><span class="stat__l">better absorption</span></div>
-        <div class="stat reveal"><span class="stat__n" data-count="10">10×</span><span class="stat__l">the benefits</span></div>
+        <div class="statcard reveal"><span class="statcard__n" data-count="4">4×</span><span>more effective</span></div>
+        <div class="statcard reveal"><span class="statcard__n" data-count="85">85%</span><span>better absorption</span></div>
+        <div class="statcard reveal"><span class="statcard__n" data-count="10">10×</span><span>the benefits</span></div>
       </div>
     </section>
 
+    <!-- BAND -->
     <section class="band reveal">
       <h2>Why ghee + actives?</h2>
       <p>Most supplements are poorly absorbed — up to 80% wasted. In Ayurveda, actives are always bound with ghee for optimal uptake. Our Swiss blend improves absorption by up to 85%, multiplying the benefit tenfold.</p>
     </section>
 
+    <!-- DETAILS -->
     <section class="details" id="use">
-      <div class="detail reveal"><h3>How to use</h3><p>1 capsule per day, with liquid.</p></div>
-      <div class="detail reveal"><h3>Inside</h3><p id="p-ingredients"></p></div>
-      <div class="detail reveal"><h3>Precautions</h3><p>Not for pregnant/breastfeeding women or under-16s. Consult a specialist if under treatment or with high blood pressure, hormonal issues, ulcers, kidney/liver disease, diabetes or thyroid conditions. Do not exceed the daily dose.</p></div>
-      <div class="detail reveal"><h3>Storage</h3><p>Store at room temperature (15–25°C), out of reach of children. Distribution: AXES sàrl, P.O. Box 27, 2854 Bassecourt, Switzerland.</p></div>
+      <div class="dcard reveal"><h3>How to use</h3><p>1 capsule per day, with liquid.</p></div>
+      <div class="dcard reveal"><h3>Inside</h3><p id="p-ingredients"></p></div>
+      <div class="dcard reveal"><h3>Precautions</h3><p>Not for pregnant/breastfeeding women or under-16s. Consult a specialist if under treatment or with high blood pressure, hormonal issues, ulcers, kidney/liver disease, diabetes or thyroid conditions. Do not exceed the daily dose.</p></div>
+      <div class="dcard reveal"><h3>Storage</h3><p>Store at room temperature (15–25°C), out of reach of children. Distribution: AXES sàrl, P.O. Box 27, 2854 Bassecourt, Switzerland.</p></div>
     </section>
 
+    <!-- FINAL -->
     <section class="final reveal">
       <h2>Bring the ritual home.</h2>
-      <button class="btn btn--solid btn--lg" data-magnetic id="p-final">Add to cart</button>
+      <button class="btn btn--solid btn--lg" data-magnetic>Add to cart</button>
     </section>
   </main>
 
-  <footer class="pdp-footer">
-    <div class="pdp-footer__brand">VK<span>®</span><em>SWISS</em></div>
-    <div class="pdp-footer__cols">
+  <footer class="foot">
+    <div class="foot__brand">VK<span>SWISS</span></div>
+    <div class="foot__links">
       <a href="/">Home</a><a href="/#products">All products</a>
       <a href="mailto:info@vk-swiss.ch">info@vk-swiss.ch</a><a href="tel:+41792890449">+41 79 289 04 49</a>
     </div>
-    <p class="pdp-footer__legal">© 2026 VK Swiss · Pure Swiss Ghee</p>
+    <p class="foot__legal">© 2026 VK Swiss · Pure Swiss Ghee</p>
   </footer>
 
   <script type="module" src="/src/product.js"></script>

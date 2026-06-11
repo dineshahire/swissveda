@@ -35,6 +35,18 @@ const img = document.querySelector('#p-img');
 img.src = p.img; img.alt = `VK Swiss ${p.name}`;
 document.querySelector('#p-orb').src = p.img;
 
+// sticky buy bar
+const shortName = p.name.replace(/^Natural\s+/i, '');
+document.querySelector('#bar-img').src = p.img;
+set('#bar-name', shortName);
+set('#bar-price', p.price);
+const bar = document.querySelector('#buybar');
+ScrollTrigger.create({
+  trigger: '.hero', start: 'bottom 70%',
+  onEnter: () => bar.classList.add('is-show'),
+  onLeaveBack: () => bar.classList.remove('is-show'),
+});
+
 const fill = (sel, items) => {
   const ul = document.querySelector(sel);
   ul.innerHTML = items.map((t) => `<li>${t}</li>`).join('');
