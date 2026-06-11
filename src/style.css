@@ -11,8 +11,9 @@
   --ink:        #2a2419;
   --ink-soft:   #5a5142;
   --black:      #14110b;
-  --serif: "Cormorant Garamond", Georgia, serif;
-  --sans:  "Inter", system-ui, -apple-system, sans-serif;
+  /* Poppins everywhere (display headings use heavier weights) */
+  --serif: "Poppins", system-ui, -apple-system, sans-serif;
+  --sans:  "Poppins", system-ui, -apple-system, sans-serif;
   --ease:  cubic-bezier(0.22, 1, 0.36, 1);
 }
 

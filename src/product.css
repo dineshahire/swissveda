@@ -6,8 +6,8 @@
   --gold: #c89b3c; --gold-soft: #e6c878;
   --cream: #f6f0e4; --cream-2: #efe6d3; --paper: #fbf9f4;
   --ink: #2a2419; --ink-soft: #6a6151; --line: rgba(42,36,25,0.12);
-  --serif: "Cormorant Garamond", Georgia, serif;
-  --sans: "Inter", system-ui, -apple-system, sans-serif;
+  --serif: "Poppins", system-ui, -apple-system, sans-serif;
+  --sans: "Poppins", system-ui, -apple-system, sans-serif;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
