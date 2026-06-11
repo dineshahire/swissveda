@@ -16,7 +16,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: 'index.html',
-        shilajit: 'shilajit.html', // product detail page
+        product: 'product.html', // data-driven product detail page (?id=...)
       },
       output: {
         // split the heavy libs into their own cacheable chunk so the app code
