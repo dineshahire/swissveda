@@ -6,7 +6,7 @@
 //  tear, flash, or evict. Smooth forward AND back on every device.
 // ─────────────────────────────────────────────────────────────────────────
 
-const CACHE_VER = 'c10'; // bump whenever frame sets are re-exported
+const CACHE_VER = 'c11'; // bump whenever frame sets are re-exported
 
 export function pickTier() {
   const nav = typeof navigator !== 'undefined' ? navigator : {};
