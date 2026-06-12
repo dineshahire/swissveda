@@ -119,14 +119,8 @@ a { color: inherit; text-decoration: none; }
 #scene {
   display: block; width: 100%; height: 100%;
   transform-origin: center center; will-change: transform;
-  /* Cinematic colour grade — lifts contrast & warmth so the reel reads
-     sharper and richer (golden-ghee mood) at zero GPU cost on every device. */
-  filter: contrast(1.06) saturate(1.1) sepia(0.04);
-}
-/* Capable devices (hi tier) also get a real unsharp-mask pass to kill the
-   upscale softness. Gated by JS so low-end/mobile GPUs skip the convolution. */
-#scene.sharp {
-  filter: url(#sharpen) contrast(1.06) saturate(1.1) sepia(0.04);
+  /* NO CSS filter here — the colour grade is BAKED into the frames at export.
+     A runtime filter re-runs on every drawn frame = constant GPU cost = jank. */
 }
 
 /* cinematic vignette + subtle film grain */
@@ -135,14 +129,12 @@ a { color: inherit; text-decoration: none; }
   background: radial-gradient(ellipse at center,
     rgba(0,0,0,0) 52%, rgba(0,0,0,0.45) 100%);
 }
+/* grain: STATIC and blend-free — the old animated mix-blend overlay forced
+   full-screen GPU compositing every frame (a constant scroll-jank source). */
 .grain {
-  position: absolute; inset: -50%; pointer-events: none; z-index: 3;
-  opacity: 0.05; mix-blend-mode: overlay;
+  position: absolute; inset: 0; pointer-events: none; z-index: 3;
+  opacity: 0.04;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation: grain 0.6s steps(2) infinite;
-}
-@keyframes grain {
-  0% { transform: translate(0,0); } 50% { transform: translate(-3%,2%); } 100% { transform: translate(2%,-2%); }
 }
 
 /* ───────────── INTRO WHITE LIGHT REVEAL ───────────── */
