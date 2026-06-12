@@ -32,7 +32,7 @@ export const CONFIG = {
     ext: 'jpg',
     pad: 4,
     start: 1,
-    count: 159,    // product 56 uploaded.mp4 @ 9fps, 720p — held fully in RAM
+    count: 106,    // product 100-2.mp4 @ 9fps, 720p — held fully in RAM
   },
 
   // Scroll-synced captions. `at` is normalized scroll progress 0..1 where the
