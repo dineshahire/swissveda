@@ -111,10 +111,12 @@ export class CanvasScrubber {
 
   scrub(p) { this._target = Math.max(0, Math.min(p, 1)); }
 
-  /** Ease toward target; draw the matching frame. Call once per rAF. */
+  /** Draw the frame for the current scroll position. Call once per rAF.
+     Tracks the scroll target DIRECTLY (no internal easing) — Lenis already
+     smooths the scroll value, so a second lerp here just made the frame trail
+     the finger = the "lag" feeling. Direct = buttery + attached. */
   update() {
-    this._cur += (this._target - this._cur) * 0.18;
-    if (Math.abs(this._target - this._cur) < 0.0005) this._cur = this._target;
+    this._cur = this._target;
     const idx = Math.min(this.count - 1, Math.max(0, Math.round(this._cur * (this.count - 1))));
     if (idx === this.current) return;
     if (!this.frames[idx]) return;

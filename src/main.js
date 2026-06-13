@@ -77,7 +77,10 @@ function hideLoader() {
 }
 
 const TIER = pickTier();
-const TIER_DPR = TIER === 'lo' ? 1.0 : 1.5;
+// Cap canvas pixel-ratio at 1 — a scroll-scrubbed video reel gains nothing
+// from 1.5–2× DPR but pays a big per-frame fill cost. 1× = far smoother fill,
+// imperceptible softness on moving footage.
+const TIER_DPR = 1.0;
 
 async function init() {
   const cfg = CONFIG.sequence.tiers[TIER] || CONFIG.sequence.tiers.hi;
