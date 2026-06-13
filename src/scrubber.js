@@ -6,7 +6,7 @@
 //  tear, flash, or evict. Smooth forward AND back on every device.
 // ─────────────────────────────────────────────────────────────────────────
 
-const CACHE_VER = 'c11'; // bump whenever frame sets are re-exported
+const CACHE_VER = 'c12'; // bump whenever frame sets are re-exported
 
 export function pickTier() {
   const nav = typeof navigator !== 'undefined' ? navigator : {};
@@ -36,7 +36,7 @@ export class CanvasScrubber {
     this.conc = opts.conc ?? 10;
 
     this.frames = new Array(this.count); // idx -> ImageBitmap
-    this._target = 0; this._cur = 0; this._drawn = -1;
+    this._target = 0; this._cur = 0; this.current = -1;
     this._w = 0; this._h = 0;
     this._warned = false;
 
@@ -78,34 +78,19 @@ export class CanvasScrubber {
     this._w = w; this._h = h;
     this.canvas.width = w;
     this.canvas.height = h;
-    this._drawAt(this._cur); // redraw current position into the new size
+    this._drawIdx(this.current >= 0 ? this.current : 0);
   }
 
-  /** Draw one bitmap, object-fit: cover, at the given alpha. */
-  _blit(bmp, alpha) {
+  /** Draw frame `idx`, object-fit: cover (one crisp frame, no blending). */
+  _drawIdx(idx) {
+    const bmp = this.frames[idx];
+    if (!bmp) return;
     const cw = this.canvas.width, ch = this.canvas.height;
     const iw = bmp.width, ih = bmp.height;
     const scale = Math.max(cw / iw, ch / ih);
     const dw = iw * scale, dh = ih * scale;
-    this.ctx.globalAlpha = alpha;
     this.ctx.drawImage(bmp, 0, 0, iw, ih, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
   }
-
-  /** Draw at a FRACTIONAL position t (0..1), cross-fading the two nearest
-     frames so slow scrolling glides smoothly instead of stepping. */
-  _drawAt(t) {
-    const max = this.count - 1;
-    const f = Math.max(0, Math.min(t, 1)) * max;
-    const i0 = Math.floor(f);
-    const i1 = Math.min(max, i0 + 1);
-    const frac = f - i0;
-    const a = this.frames[i0], b = this.frames[i1];
-    if (!a && !b) return;
-    if (a) this._blit(a, 1);            // base frame, opaque
-    if (b && frac > 0.004) this._blit(b, frac); // next frame faded in by frac
-    this.ctx.globalAlpha = 1;
-  }
-  _drawIdx(idx) { this._drawAt(idx / (this.count - 1)); }
 
   async load(onProgress) {
     let done = 0, next = 0;
@@ -119,7 +104,8 @@ export class CanvasScrubber {
     };
     await Promise.all(Array.from({ length: Math.min(this.conc, this.count) }, worker));
     this._resize();
-    this._drawAt(0); // open on the first frame
+    const firstIdx = this.frames.findIndex(Boolean);
+    if (firstIdx >= 0) { this.current = firstIdx; this._drawIdx(firstIdx); }
   }
 
   scrub(p) { this._target = Math.max(0, Math.min(p, 1)); }
@@ -129,9 +115,10 @@ export class CanvasScrubber {
      smooths the scroll value, so a second lerp here just made the frame trail
      the finger = the "lag" feeling. Direct = buttery + attached. */
   update() {
-    this._cur = this._target;
-    if (this._cur === this._drawn) return; // nothing moved → skip
-    this._drawn = this._cur;
-    this._drawAt(this._cur);
+    this._cur = this._target;               // track scroll directly (Lenis smooths it)
+    const idx = Math.min(this.count - 1, Math.max(0, Math.round(this._cur * (this.count - 1))));
+    if (idx === this.current || !this.frames[idx]) return;
+    this.current = idx;
+    this._drawIdx(idx);
   }
 }
