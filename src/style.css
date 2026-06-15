@@ -327,3 +327,10 @@ a { color: inherit; text-decoration: none; }
 
 /* lottie loader animation (home loading screen) */
 .loader__lottie { width: 96px; height: 96px; margin: 0 auto 0.6rem; }
+
+/* hero end-card: lineup image fades in at the end of the scrub */
+.hero-endcard {
+  position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%;
+  object-fit: cover; opacity: 0; pointer-events: none;
+  transition: opacity 0.25s linear; will-change: opacity;
+}
