@@ -30,9 +30,9 @@ function initSmoothScroll(enable = true) {
   // lerp (frame-rate-independent) feels "attached to the finger" on trackpads —
   // duration-based easing floats; lerp tracks input. 0.1 ≈ Apple's feel.
   lenis = new Lenis({
-    lerp: 0.1,
+    lerp: 0.07,
     smoothWheel: true,
-    wheelMultiplier: 1,
+    wheelMultiplier: 0.9,
     syncTouch: false,          // native touch on mobile = lighter, no fight
     touchInertiaMultiplier: 12,
   });
@@ -77,9 +77,6 @@ function hideLoader() {
 }
 
 const TIER = pickTier();
-// Cap canvas pixel-ratio at 1 — a scroll-scrubbed video reel gains nothing
-// from 1.5–2× DPR but pays a big per-frame fill cost. 1× = far smoother fill,
-// imperceptible softness on moving footage.
 const TIER_DPR = 1.0;
 
 async function init() {
@@ -125,7 +122,6 @@ async function init() {
 function setupHeroScroll(hero) {
   document.querySelector('.stage').style.height = `${CONFIG.scrollLengthVH * 100}vh`;
 
-  // intro white-light reveal
   const flashEl = document.getElementById('intro-flash');
   const introTl = gsap.timeline({ delay: 1.3 });
   introTl
@@ -149,7 +145,7 @@ function setupHeroScroll(hero) {
     trigger: '.stage',
     start: 'top top',
     end: 'bottom bottom',
-    fastScrollEnd: true,        // settle cleanly after fast flings (no overrun jitter)
+    fastScrollEnd: true,
     invalidateOnRefresh: true,
     onToggle: (self) => { active = self.isActive; },
     onUpdate: (self) => {
