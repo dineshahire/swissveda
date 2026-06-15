@@ -176,17 +176,12 @@ function setupClip() {
   if (!el || !CONFIG.clip) return;
   const clip = new CanvasScrubber(el, CONFIG.clip, { maxDPR: TIER_DPR });
   clip.load();
-  const endcard = document.getElementById('clip-endcard');
 
   ScrollTrigger.create({
     trigger: '.clip-stage',
     start: 'top top',
     end: 'bottom bottom',
-    onUpdate: (self) => {
-      clip.scrub(self.progress);
-      // fade the lineup end-card in over the last 12% of the product clip
-      if (endcard) endcard.style.opacity = Math.max(0, Math.min(1, (self.progress - 0.88) / 0.12)).toFixed(3);
-    },
+    onUpdate: (self) => clip.scrub(self.progress),
   });
 
   let active = false;
