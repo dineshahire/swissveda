@@ -164,3 +164,16 @@ h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
   background: var(--paper); transition: opacity 0.6s var(--ease), visibility 0.6s var(--ease); }
 .pdp-loader.is-hidden { opacity: 0; visibility: hidden; }
 .pdp-loader__anim { width: 110px; height: 110px; }
+
+/* ── range strip (product lineup) ── */
+.range { max-width: 1140px; margin: 0 auto; padding: clamp(2rem, 6vh, 4.5rem) clamp(1.2rem, 5vw, 3.5rem); text-align: center; }
+.range__img { display: block; border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 8%, #fff), var(--card));
+  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease); }
+.range__img:hover { transform: translateY(-4px); box-shadow: 0 32px 70px -30px rgba(28,24,19,0.34); }
+.range__img img { width: 100%; height: auto; display: block; }
+.range__links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin-top: 1.6rem; }
+.range__chip { padding: 0.55rem 1.2rem; border-radius: 100px; border: 1px solid var(--line);
+  font-size: 0.82rem; font-weight: 500; color: var(--ink-soft); transition: 0.25s; }
+.range__chip:hover { border-color: var(--accent); color: var(--accent); }
+.range__chip.is-active { background: var(--accent); color: #fff; border-color: var(--accent); }

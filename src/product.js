@@ -87,6 +87,14 @@ ddBtn.addEventListener('click', (e) => {
 });
 document.addEventListener('click', () => { dd.classList.remove('is-open'); ddBtn.setAttribute('aria-expanded', 'false'); });
 
+// range strip: chips linking to every product
+const rangeLinks = document.querySelector('#range-links');
+if (rangeLinks) {
+  rangeLinks.innerHTML = ORDER.map((k) =>
+    `<a href="product.html?id=${k}" class="range__chip${k === key ? ' is-active' : ''}">${PRODUCTS[k].name.replace(/^Natural\s+/i, '')}</a>`
+  ).join('');
+}
+
 // ── smooth scroll + reveals ─────────────────────────────────────────────────
 if (!REDUCED) {
   const lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
