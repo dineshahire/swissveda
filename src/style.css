@@ -92,11 +92,17 @@ a { color: inherit; text-decoration: none; }
 }
 .nav {
   display: flex; gap: clamp(1rem, 2.2vw, 2.4rem);
-  font-size: clamp(0.7rem, 1vw, 0.82rem);
+  font-size: clamp(0.74rem, 1vw, 0.86rem);
+  font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
-.nav a { position: relative; opacity: 0.85; transition: opacity 0.3s; }
+.nav a, .nav-dd__btn { font-weight: 600; }
+/* legibility over bright video frames */
+.ui--header:not(.on-light) .brand,
+.ui--header:not(.on-light) .nav a,
+.ui--header:not(.on-light) .nav-dd__btn { text-shadow: 0 1px 12px rgba(0,0,0,0.55); }
+.nav a { position: relative; opacity: 1; transition: opacity 0.3s; }
 .nav a:hover { opacity: 1; }
 .nav a::after {
   content: ''; position: absolute; left: 0; bottom: -6px;
