@@ -124,7 +124,6 @@ async function init() {
 
 function setupHeroScroll(hero) {
   document.querySelector('.stage').style.height = `${CONFIG.scrollLengthVH * 100}vh`;
-  const endcard = document.getElementById('hero-endcard');
 
   // intro white-light reveal
   const flashEl = document.getElementById('intro-flash');
@@ -158,8 +157,6 @@ function setupHeroScroll(hero) {
       hero.scrub(self.progress);
       updateCaptions(self.progress);
       hintEl.style.opacity = self.progress > 0.04 ? '0' : '1';
-      // fade the lineup end-card in over the last 12% of the reel
-      if (endcard) endcard.style.opacity = Math.max(0, Math.min(1, (self.progress - 0.88) / 0.12)).toFixed(3);
     },
   });
 
@@ -179,12 +176,17 @@ function setupClip() {
   if (!el || !CONFIG.clip) return;
   const clip = new CanvasScrubber(el, CONFIG.clip, { maxDPR: TIER_DPR });
   clip.load();
+  const endcard = document.getElementById('clip-endcard');
 
   ScrollTrigger.create({
     trigger: '.clip-stage',
     start: 'top top',
     end: 'bottom bottom',
-    onUpdate: (self) => clip.scrub(self.progress),
+    onUpdate: (self) => {
+      clip.scrub(self.progress);
+      // fade the lineup end-card in over the last 12% of the product clip
+      if (endcard) endcard.style.opacity = Math.max(0, Math.min(1, (self.progress - 0.88) / 0.12)).toFixed(3);
+    },
   });
 
   let active = false;
