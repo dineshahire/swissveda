@@ -140,14 +140,22 @@ function setupHeroScroll(hero) {
     gsap.to(canvas, { scale: 1.0, duration: 0.4, ease: 'power2.out' });
   };
 
-  let active = true;
+  let heroRaf = null;
+  const tick = () => { hero.update(); heroRaf = requestAnimationFrame(tick); };
+
   ScrollTrigger.create({
     trigger: '.stage',
     start: 'top top',
     end: 'bottom bottom',
     fastScrollEnd: true,
     invalidateOnRefresh: true,
-    onToggle: (self) => { active = self.isActive; },
+    onToggle: (self) => {
+      if (self.isActive) {
+        if (!heroRaf) heroRaf = requestAnimationFrame(tick);
+      } else {
+        cancelAnimationFrame(heroRaf); heroRaf = null;
+      }
+    },
     onUpdate: (self) => {
       if (self.progress > 0.002) endIntro();
       hero.scrub(self.progress);
@@ -155,12 +163,7 @@ function setupHeroScroll(hero) {
       hintEl.style.opacity = self.progress > 0.04 ? '0' : '1';
     },
   });
-
-  const tick = () => {
-    requestAnimationFrame(tick);
-    if (active) hero.update();
-  };
-  requestAnimationFrame(tick);
+  heroRaf = requestAnimationFrame(tick); // start immediately (hero is visible on load)
 
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) { ScrollTrigger.refresh(); if (lenis) lenis.resize(); }
@@ -171,28 +174,25 @@ function setupClip() {
   const el = document.getElementById('clip-canvas');
   if (!el || !CONFIG.clip) return;
   const clip = new CanvasScrubber(el, CONFIG.clip, { maxDPR: TIER_DPR });
-  clip.load();
+  clip.load(); // loads in background; null-frame guard in update() handles early scroll
 
-  ScrollTrigger.create({
-    trigger: '.clip-stage',
-    start: 'top top',
-    end: 'bottom bottom',
-    onUpdate: (self) => clip.scrub(self.progress),
-  });
+  let rafId = null;
+  const tick = () => { clip.update(); rafId = requestAnimationFrame(tick); };
 
-  let active = false;
+  // Single ScrollTrigger handles both scrub + rAF lifecycle
   ScrollTrigger.create({
     trigger: '.clip-stage',
     start: 'top bottom',
     end: 'bottom top',
-    onToggle: (self) => { active = self.isActive; },
+    onUpdate: (self) => clip.scrub(self.progress),
+    onToggle: (self) => {
+      if (self.isActive) {
+        if (!rafId) rafId = requestAnimationFrame(tick); // start only when visible
+      } else {
+        cancelAnimationFrame(rafId); rafId = null;       // stop when off-screen
+      }
+    },
   });
-
-  const tick = () => {
-    requestAnimationFrame(tick);
-    if (active) clip.update();
-  };
-  requestAnimationFrame(tick);
 }
 
 function updateCaptions(p) {
