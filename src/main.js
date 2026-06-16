@@ -30,9 +30,9 @@ function initSmoothScroll(enable = true) {
   // lerp (frame-rate-independent) feels "attached to the finger" on trackpads —
   // duration-based easing floats; lerp tracks input. 0.1 ≈ Apple's feel.
   lenis = new Lenis({
-    lerp: 0.07,
+    lerp: 0.1,
     smoothWheel: true,
-    wheelMultiplier: 0.9,
+    wheelMultiplier: 1,
     syncTouch: false,          // native touch on mobile = lighter, no fight
     touchInertiaMultiplier: 12,
   });
