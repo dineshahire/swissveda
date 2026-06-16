@@ -6,7 +6,7 @@
 //  tear, flash, or evict. Smooth forward AND back on every device.
 // ─────────────────────────────────────────────────────────────────────────
 
-const CACHE_VER = 'c16'; // bump whenever frame sets are re-exported
+const CACHE_VER = 'c17'; // bump whenever frame sets are re-exported
 
 export function pickTier() {
   const nav = typeof navigator !== 'undefined' ? navigator : {};
@@ -33,7 +33,7 @@ export class CanvasScrubber {
     this.cfg = cfg;
     this.count = cfg.count;
     this.maxDPR = opts.maxDPR ?? 1.5;
-    this.conc = opts.conc ?? 10;
+    this.conc = opts.conc ?? 20;
 
     this.frames = new Array(this.count); // idx -> ImageBitmap
     this._target = 0; this._cur = 0; this.current = -1;
