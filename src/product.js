@@ -1,18 +1,9 @@
+import './style.css';
 import './product.css';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { PRODUCTS, ORDER } from './products-data.js';
-import { mountLoaderLottie } from './lottie.js';
-
-// load overlay: lottie until the hero image is ready (or 2.5s cap), then fade
-const pdpLoader = document.getElementById('pdp-loader');
-const pdpAnim = mountLoaderLottie(document.getElementById('pdp-lottie'));
-function hidePdpLoader() {
-  if (!pdpLoader || pdpLoader.classList.contains('is-hidden')) return;
-  pdpLoader.classList.add('is-hidden');
-  setTimeout(() => pdpAnim?.destroy(), 700);
-}
 
 gsap.registerPlugin(ScrollTrigger);
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -28,9 +19,15 @@ document.body.style.setProperty('--accent', p.accent);
 document.title = `${p.name} — VK Swiss`;
 
 const set = (sel, txt) => { const el = document.querySelector(sel); if (el) el.textContent = txt; };
+// banner overlay
+const bn = document.querySelector('#banner-name');
+if (bn) bn.innerHTML = p.name.replace(/^(Natural)\s+(.+)/i, '$1 <span style="color:#FF8A00">$2</span>');
+const bd = document.querySelector('#banner-desc');
+if (bd) bd.textContent = p.lede;
+
 set('#p-eyebrow', p.eyebrow);
 set('#p-name', p.name.replace(/^Natural\s+/i, 'Natural\n')); // line break after "Natural"
-document.querySelector('#p-name').innerHTML = p.name.replace(/^(Natural)\s+/i, '$1<br>');
+document.querySelector('#p-name').innerHTML = p.name.replace(/^(Natural)\s+(.+)/i, '$1<br><span class="accent">$2</span>');
 set('#p-sub', p.sub);
 set('#p-lede', p.lede);
 set('#p-price', p.price);
@@ -44,9 +41,6 @@ set('#p-final', `Add to cart — ${p.price}`);
 const img = document.querySelector('#p-img');
 img.src = p.img; img.alt = `VK Swiss ${p.name}`;
 document.querySelector('#p-orb').src = p.img;
-// reveal the page once the hero shot is decoded (capped so it never hangs)
-img.decode ? img.decode().then(hidePdpLoader, hidePdpLoader) : img.addEventListener('load', hidePdpLoader);
-setTimeout(hidePdpLoader, 2500);
 
 // sticky buy bar
 const shortName = p.name.replace(/^Natural\s+/i, '');
@@ -67,31 +61,24 @@ const fill = (sel, items) => {
 fill('#p-self', p.self);
 fill('#p-ghee', p.ghee);
 
-// ── header product dropdown ─────────────────────────────────────────────────
+// ── header nav ─────────────────────────────────────────────────────────────
 const nav = document.querySelector('#pdp-nav');
 nav.innerHTML = `
-  <a href="/">Home</a>
-  <div class="dropdown">
-    <button class="dropdown__btn" aria-haspopup="true" aria-expanded="false">Products ▾</button>
-    <div class="dropdown__menu">
-      ${ORDER.map((k) => `<a href="product.html?id=${k}" class="${k === key ? 'is-active' : ''}">${PRODUCTS[k].name.replace(/^Natural\s+/i, '')}</a>`).join('')}
-    </div>
-  </div>
-  <a href="#combo">The Blend</a>`;
-const dd = nav.querySelector('.dropdown');
-const ddBtn = nav.querySelector('.dropdown__btn');
-ddBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  const open = dd.classList.toggle('is-open');
-  ddBtn.setAttribute('aria-expanded', open);
-});
-document.addEventListener('click', () => { dd.classList.remove('is-open'); ddBtn.setAttribute('aria-expanded', 'false'); });
+  <a href="/" onclick="sessionStorage.setItem('fromPDP','1')">Home</a>
+  <a href="/#news">News</a>
+  <a href="/#products">Our Products</a>
+  <a href="/#find">Where To Find Us</a>
+  <a href="/#contact">Contact</a>`;
 
-// range strip: chips linking to every product
+// range strip: chips linking to every product (rich cards)
 const rangeLinks = document.querySelector('#range-links');
 if (rangeLinks) {
   rangeLinks.innerHTML = ORDER.map((k) =>
-    `<a href="product.html?id=${k}" class="range__chip${k === key ? ' is-active' : ''}">${PRODUCTS[k].name.replace(/^Natural\s+/i, '')}</a>`
+    `<a href="product.html?id=${k}" class="range__chip${k === key ? ' is-active' : ''}">
+      <img src="${PRODUCTS[k].img}" alt="${PRODUCTS[k].name}" class="range__chip-img" />
+      <span class="range__chip-name">${PRODUCTS[k].name.replace(/^Natural\s+/i, '')}</span>
+      <span class="range__chip-price">${PRODUCTS[k].price}</span>
+    </a>`
   ).join('');
 }
 
@@ -131,3 +118,36 @@ if (FINE && !REDUCED) {
     el.addEventListener('mouseleave', () => { xTo(0); yTo(0); });
   });
 }
+
+// ── Blend section: sync product image into duplicate orb ──────────────────
+const blendProductImg = document.querySelector('.blend__product-img');
+if (blendProductImg) { blendProductImg.src = p.img; blendProductImg.alt = p.name; }
+
+// ── Price + image sync to final CTA section ───────────────────────────────
+const finalPriceEl = document.querySelector('#p-price-2');
+if (finalPriceEl) finalPriceEl.textContent = p.price;
+const ctaImg = document.querySelector('#p-img-cta');
+if (ctaImg) { ctaImg.src = p.img; ctaImg.alt = p.name; }
+
+// ── Problem bar animation (scaleY from 0 → --pct) ─────────────────────────
+if (!REDUCED) {
+  document.querySelectorAll('.problem__bar').forEach((bar) => {
+    gsap.fromTo(bar, { scaleY: 0 }, {
+      scaleY: 1, duration: 1.4, ease: 'power3.out',
+      transformOrigin: 'bottom center',
+      scrollTrigger: { trigger: bar, start: 'top 85%', once: true },
+    });
+  });
+
+  // ── Delivery steps stagger reveal ─────────────────────────────────────
+  const deliveryFlow = document.querySelector('.delivery__flow');
+  if (deliveryFlow) {
+    gsap.from('.delivery__step', {
+      opacity: 0, y: 40, stagger: 0.2, duration: 1, ease: 'power3.out',
+      scrollTrigger: { trigger: deliveryFlow, start: 'top 80%', once: true },
+    });
+  }
+}
+
+// Recalculate all ScrollTrigger positions after Lenis + layout settle
+requestAnimationFrame(() => ScrollTrigger.refresh());

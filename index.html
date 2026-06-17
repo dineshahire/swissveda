@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script>if(sessionStorage.getItem('fromPDP')){document.documentElement.classList.add('no-loader');}</script>
 </head>
 <body>
   <!-- Hidden SVG: unsharp-mask kernel used to crisp the hero reel (applied to
@@ -25,7 +26,6 @@
   <div id="loader" class="loader">
     <div class="loader__inner">
       <div class="loader__logo">VK&nbsp;SWISS</div>
-      <div id="loader-lottie" class="loader__lottie"></div>
       <div class="loader__bar"><span id="loader-fill" class="loader__fill"></span></div>
       <div class="loader__pct"><span id="loader-pct">0</span>%</div>
     </div>
@@ -33,18 +33,67 @@
 
   <!-- ───────────── FIXED OVERLAY UI (header) ───────────── -->
   <header class="ui ui--header">
-    <a class="brand" href="#top">VK&nbsp;SWISS</a>
+    <a class="brand" href="#top"><img class="brand__logo" src="./img/vk-logo-black.png" alt="VK Swiss" /></a>
     <nav class="nav">
-      <a href="#origin">Origin</a>
+      <a href="#top">Home</a>
+      <a href="#news">News</a>
       <div class="nav-dd">
-        <a href="#products" class="nav-dd__btn">Products ▾</a>
+        <a href="#products" class="nav-dd__btn">Our Products &#9662;</a>
         <div class="nav-dd__menu">
-          <a href="product.html?id=tribulus">Tribulus</a>
-          <a href="product.html?id=shilajit">Shilajit</a>
-          <a href="product.html?id=shatavari">Shatavari</a>
-          <a href="product.html?id=bacopa">Bacopa</a>
-          <a href="product.html?id=turmeric">Turmeric / Piperine</a>
-          <a href="product.html?id=ashwagandha">Ashwagandha</a>
+          <a href="product.html?id=tribulus" class="nav-dd__item">
+            <span class="nav-dd__icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="10" cy="10" r="4"/><path d="M10 2v4M10 14v4M2 10h4M14 10h4M4.93 4.93l2.83 2.83M12.24 12.24l2.83 2.83M4.93 15.07l2.83-2.83M12.24 7.76l2.83-2.83"/></svg>
+            </span>
+            <span class="nav-dd__text">
+              <span class="nav-dd__name">Tribulus</span>
+              <span class="nav-dd__desc">Vitality &amp; strength support</span>
+            </span>
+          </a>
+          <a href="product.html?id=shilajit" class="nav-dd__item">
+            <span class="nav-dd__icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="10,2 18,7 18,13 10,18 2,13 2,7"/></svg>
+            </span>
+            <span class="nav-dd__text">
+              <span class="nav-dd__name">Shilajit</span>
+              <span class="nav-dd__desc">Ancient mineral resin, energy</span>
+            </span>
+          </a>
+          <a href="product.html?id=shatavari" class="nav-dd__item">
+            <span class="nav-dd__icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10 18C10 18 3 13 3 8a7 7 0 0114 0c0 5-7 10-7 10z"/><path d="M10 8v6"/></svg>
+            </span>
+            <span class="nav-dd__text">
+              <span class="nav-dd__name">Shatavari</span>
+              <span class="nav-dd__desc">Female wellness &amp; balance</span>
+            </span>
+          </a>
+          <a href="product.html?id=bacopa" class="nav-dd__item">
+            <span class="nav-dd__icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="10" cy="10" r="7"/><circle cx="10" cy="10" r="3"/></svg>
+            </span>
+            <span class="nav-dd__text">
+              <span class="nav-dd__name">Bacopa</span>
+              <span class="nav-dd__desc">Cognitive focus &amp; memory</span>
+            </span>
+          </a>
+          <a href="product.html?id=turmeric" class="nav-dd__item">
+            <span class="nav-dd__icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10 3l2.5 5h5l-4 3.5 1.5 5.5L10 14l-5 3 1.5-5.5L2.5 8h5z"/></svg>
+            </span>
+            <span class="nav-dd__text">
+              <span class="nav-dd__name">Turmeric / Piperine</span>
+              <span class="nav-dd__desc">Anti-inflammatory &amp; absorption</span>
+            </span>
+          </a>
+          <a href="product.html?id=ashwagandha" class="nav-dd__item">
+            <span class="nav-dd__icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10 2c0 0-6 4-6 9a6 6 0 0012 0c0-5-6-9-6-9z"/><path d="M10 11V7"/><path d="M7 9c1-1 2-1.5 3-2"/></svg>
+            </span>
+            <span class="nav-dd__text">
+              <span class="nav-dd__name">Ashwagandha</span>
+              <span class="nav-dd__desc">Stress relief &amp; adaptogen</span>
+            </span>
+          </a>
         </div>
       </div>
       <a href="#find">Where to find us</a>
@@ -53,19 +102,13 @@
   </header>
 
   <!-- ───────────── PINNED FILM STAGE ───────────── -->
-  <!-- .stage is the scroll spacer; .sticky is what gets pinned -->
   <section id="top" class="stage">
     <div class="sticky">
       <canvas id="scene"></canvas>
       <div class="vignette"></div>
       <div class="grain"></div>
-      <!-- white light reveal: scene fades in from white on load -->
       <div id="intro-flash" class="intro-flash"></div>
-
-      <!-- scroll-synced captions (filled from CONFIG by JS) -->
       <div id="captions" class="captions"></div>
-
-      <!-- scroll hint -->
       <div id="scroll-hint" class="scroll-hint">
         <span>SCROLL</span>
         <span class="scroll-hint__arrow">↓</span>
@@ -86,7 +129,7 @@
       </p>
     </section>
 
-    <!-- ── Scroll-scrubbed clip (full-bleed; scrubs as it passes the viewport) ── -->
+    <!-- ── Scroll-scrubbed clip ── -->
     <section class="clip-stage">
       <div class="clip-sticky">
         <div class="clip-box">

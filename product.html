@@ -7,141 +7,565 @@
   <meta name="description" content="VK Swiss — Ayurvedic actives in 100% pure Swiss ghee. 30 capsules." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script type="module" src="./src/product.js"></script>
 </head>
 <body class="pdp">
 
-  <!-- load overlay (lottie) -->
-  <div id="pdp-loader" class="pdp-loader"><div id="pdp-lottie" class="pdp-loader__anim"></div></div>
-
-  <header class="nav">
-    <a class="nav__brand" href="/">VK<span>SWISS</span></a>
-    <div class="nav__mid" id="pdp-nav"></div>
-    <a class="nav__cart" href="#buy">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M6 6 5 3H2"/></svg>
-      Cart
+  <!-- HEADER -->
+  <header class="ui ui--header">
+    <a class="brand" href="/">
+      <img class="brand__logo" src="./img/vk-logo-black.png" alt="VK Swiss" />
     </a>
+    <nav class="nav" id="pdp-nav"></nav>
+    <button class="pdp-order-btn" data-magnetic>Order Now ↗</button>
   </header>
 
-  <!-- sticky buy bar (revealed on scroll) -->
+  <!-- HERO BANNER -->
+  <section class="static-hero-banner">
+    <img src="./img/hero-banner.png" alt="VK Swiss" />
+    <div class="banner-overlay">
+      <div class="banner-badge"><span class="banner-cross">+</span><span>SWISS FORMULATED WELLNESS</span></div>
+      <h1 class="banner-title" id="banner-name"></h1>
+      <p class="banner-sub">Premium Swiss Dietary Supplement</p>
+      <p class="banner-desc" id="banner-desc"></p>
+      <div class="banner-btns">
+        <a href="#buy" class="banner-shop-btn">Shop Now &rarr;</a>
+        <a href="#why" class="banner-learn-btn">Learn More &rarr;</a>
+      </div>
+      <div class="banner-feats">
+        <div class="banner-feat-item">
+          <div class="banner-feat-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF8A00" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+          <span>Swiss Quality<br>Standards</span>
+        </div>
+        <div class="banner-feat-item">
+          <div class="banner-feat-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF8A00" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M8 12c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4-4-1.8-4-4z"/></svg></div>
+          <span>Premium<br>Ingredients</span>
+        </div>
+        <div class="banner-feat-item">
+          <div class="banner-feat-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF8A00" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M9 3h6M10 3v6l-3 8h10l-3-8V3"/></svg></div>
+          <span>Scientifically<br>Formulated</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BELOW BANNER -->
+  <section class="below-banner">
+    <!-- Stats row -->
+    <div class="bc-stats-row">
+      <div class="bc-stat-card">
+        <div class="bc-stat__ico">★★★★★</div>
+        <div class="bc-stat__n">4.9/5</div>
+        <div class="bc-stat__l">Customer Rating</div>
+      </div>
+      <div class="bc-stat-card">
+        <div class="bc-stat__n">10K+</div>
+        <div class="bc-stat__l">Happy Customers</div>
+      </div>
+      <div class="bc-stat-card">
+        <div class="bc-stat__n"><span class="bc-stat__plus">+</span>100%</div>
+        <div class="bc-stat__l">Swiss Quality Standards</div>
+      </div>
+      <div class="bc-stat-card">
+        <div class="bc-stat__n">98%</div>
+        <div class="bc-stat__l">Customer Satisfaction</div>
+      </div>
+    </div>
+    <!-- Why choose -->
+    <div class="bc-why-head">
+      <p class="bc-why-tag">THE VK SWISS ADVANTAGE</p>
+      <h2 class="bc-why-title">Why Choose VK SWISS?</h2>
+    </div>
+    <!-- Features grid -->
+    <div class="bc-features">
+      <div class="bc-feat-card">
+        <div class="bc-feat__ico"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF8A00" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/></svg></div>
+        <h4>Joint Support</h4>
+        <p>Helps maintain healthy joints and supports flexibility and mobility.</p>
+      </div>
+      <div class="bc-feat-card">
+        <div class="bc-feat__ico"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF8A00" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <h4>Enhanced Absorption</h4>
+        <p>Piperine (black pepper extract) enhances turmeric absorption for better results.</p>
+      </div>
+      <div class="bc-feat-card">
+        <div class="bc-feat__ico"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF8A00" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h4>Natural Ingredients</h4>
+        <p>Made with carefully selected natural ingredients for optimal wellness.</p>
+      </div>
+      <div class="bc-feat-card">
+        <div class="bc-feat__ico"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF8A00" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h4>Swiss Quality</h4>
+        <p>Produced in Switzerland following the highest quality and safety standards.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MOUNTAIN BANNER -->
+  <section class="mountain-banner">
+    <img src="./img/mountain2.png" alt="VK Swiss Alps — Premium Ingredients" />
+  </section>
+
+  <!-- PRODUCT FEATURES -->
+  <section class="pf-section">
+    <div class="pf-inner">
+      <p class="pf-eyebrow">Crafted for Your Wellness</p>
+      <h2 class="pf-heading">Product Features</h2>
+      <div class="pf-box">
+      <div class="pf-row">
+
+        <div class="pf-item">
+          <div class="pf-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+          </div>
+          <span>High Potency<br>Formula</span>
+        </div>
+
+        <div class="pf-item">
+          <div class="pf-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <span>Daily Wellness<br>Support</span>
+        </div>
+
+        <div class="pf-item">
+          <div class="pf-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </div>
+          <span>Premium Swiss<br>Manufacturing</span>
+        </div>
+
+        <div class="pf-item">
+          <div class="pf-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>
+          </div>
+          <span>Easy Daily<br>Use</span>
+        </div>
+
+        <div class="pf-item">
+          <div class="pf-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8C8 10 5.9 16.17 3.82 19.5a.5.5 0 0 0 .74.65C6 18.5 8 17 12 17c4 0 6 1.5 7.44 2.65a.5.5 0 0 0 .74-.65C18.1 16.17 16 10 17 8z"/><path d="M16 2c0 0-1.6 4-4 6"/></svg>
+          </div>
+          <span>Natural<br>Ingredients</span>
+        </div>
+
+        <div class="pf-item">
+          <div class="pf-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          <span>Quality<br>Tested</span>
+        </div>
+
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="tst-section">
+    <div class="tst-inner">
+      <p class="tst-eyebrow">Trusted by Thousands</p>
+      <h2 class="tst-heading">What Our Customers Say</h2>
+    </div>
+
+    <!-- ROW 1 — scrolls LEFT -->
+    <div class="tst-marquee-wrap">
+      <div class="tst-track tst-track--left">
+        <!-- original set -->
+        <div class="tst-card"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">Excellent quality product. I can really feel the difference in my daily wellness routine. Absolutely love it!</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#FF8A00,#FFD580)"><span>SM</span></div><div class="tst-user-info"><strong>Sarah M.</strong><span>📍 Zurich, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+        <div class="tst-card tst-card--featured"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">Premium packaging and trusted ingredients. The quality is unmatched. Highly recommended to everyone!</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#4A90D9,#A8D4F5)"><span>DK</span></div><div class="tst-user-info"><strong>Daniel K.</strong><span>📍 Bern, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+        <div class="tst-card"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">One of the best turmeric supplements I've ever tried. Great for joints and immunity. Will definitely reorder!</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#22A45D,#A8E6C1)"><span>EL</span></div><div class="tst-user-info"><strong>Emma L.</strong><span>📍 Geneva, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+        <div class="tst-card"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">VK Swiss has changed my health journey. The natural ingredients make a real noticeable difference every single day.</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#9B59B6,#D7A8F0)"><span>MW</span></div><div class="tst-user-info"><strong>Marcus W.</strong><span>📍 Basel, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+        <div class="tst-card"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">Incredible results in just 3 weeks. Clean ingredients, no fillers. This is the real deal — worth every penny!</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#E74C3C,#F5A9A3)"><span>LB</span></div><div class="tst-user-info"><strong>Lena B.</strong><span>📍 Lausanne, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+        <!-- duplicate set for seamless loop -->
+        <div class="tst-card" aria-hidden="true"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">Excellent quality product. I can really feel the difference in my daily wellness routine. Absolutely love it!</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#FF8A00,#FFD580)"><span>SM</span></div><div class="tst-user-info"><strong>Sarah M.</strong><span>📍 Zurich, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+        <div class="tst-card tst-card--featured" aria-hidden="true"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">Premium packaging and trusted ingredients. The quality is unmatched. Highly recommended to everyone!</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#4A90D9,#A8D4F5)"><span>DK</span></div><div class="tst-user-info"><strong>Daniel K.</strong><span>📍 Bern, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+        <div class="tst-card" aria-hidden="true"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">One of the best turmeric supplements I've ever tried. Great for joints and immunity. Will definitely reorder!</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#22A45D,#A8E6C1)"><span>EL</span></div><div class="tst-user-info"><strong>Emma L.</strong><span>📍 Geneva, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+        <div class="tst-card" aria-hidden="true"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">VK Swiss has changed my health journey. The natural ingredients make a real noticeable difference every single day.</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#9B59B6,#D7A8F0)"><span>MW</span></div><div class="tst-user-info"><strong>Marcus W.</strong><span>📍 Basel, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+        <div class="tst-card" aria-hidden="true"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">Incredible results in just 3 weeks. Clean ingredients, no fillers. This is the real deal — worth every penny!</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#E74C3C,#F5A9A3)"><span>LB</span></div><div class="tst-user-info"><strong>Lena B.</strong><span>📍 Lausanne, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+      </div>
+    </div>
+
+    <!-- ROW 2 — scrolls RIGHT -->
+    <div class="tst-marquee-wrap">
+      <div class="tst-track tst-track--right">
+        <!-- original set -->
+        <div class="tst-card"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">The ghee quality is exceptional. I use it every morning and feel so much better. Swiss quality truly shows!</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#F39C12,#FAD7A0)"><span>AH</span></div><div class="tst-user-info"><strong>Anna H.</strong><span>📍 Winterthur, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+        <div class="tst-card tst-card--featured"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">My doctor recommended turmeric and VK Swiss is the best one I have found. Pure, potent and fast results.</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#1ABC9C,#A3E4D7)"><span>TF</span></div><div class="tst-user-info"><strong>Thomas F.</strong><span>📍 St. Gallen, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+        <div class="tst-card"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">I gifted this to my mother and she loves it! The packaging is luxurious and ingredients are clean and natural.</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#E91E8C,#F8A8D4)"><span>JM</span></div><div class="tst-user-info"><strong>Julia M.</strong><span>📍 Lucerne, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+        <div class="tst-card"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">As an athlete I rely on quality supplements. VK Swiss delivers exactly what it promises — pure and effective.</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#2C3E50,#85929E)"><span>MR</span></div><div class="tst-user-info"><strong>Michael R.</strong><span>📍 Lugano, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+        <div class="tst-card"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">Noticed a real improvement in my energy and digestion. Will never switch brands. VK Swiss for life!</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#8E44AD,#C39BD3)"><span>SV</span></div><div class="tst-user-info"><strong>Sophie V.</strong><span>📍 Thun, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+        <!-- duplicate set for seamless loop -->
+        <div class="tst-card" aria-hidden="true"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">The ghee quality is exceptional. I use it every morning and feel so much better. Swiss quality truly shows!</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#F39C12,#FAD7A0)"><span>AH</span></div><div class="tst-user-info"><strong>Anna H.</strong><span>📍 Winterthur, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+        <div class="tst-card tst-card--featured" aria-hidden="true"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">My doctor recommended turmeric and VK Swiss is the best one I have found. Pure, potent and fast results.</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#1ABC9C,#A3E4D7)"><span>TF</span></div><div class="tst-user-info"><strong>Thomas F.</strong><span>📍 St. Gallen, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+        <div class="tst-card" aria-hidden="true"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">I gifted this to my mother and she loves it! The packaging is luxurious and ingredients are clean and natural.</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#E91E8C,#F8A8D4)"><span>JM</span></div><div class="tst-user-info"><strong>Julia M.</strong><span>📍 Lucerne, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+        <div class="tst-card" aria-hidden="true"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">As an athlete I rely on quality supplements. VK Swiss delivers exactly what it promises — pure and effective.</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#2C3E50,#85929E)"><span>MR</span></div><div class="tst-user-info"><strong>Michael R.</strong><span>📍 Lugano, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+        <div class="tst-card" aria-hidden="true"><div class="tst-card-top"><div class="tst-stars">★★★★★</div><div class="tst-quote">&ldquo;</div></div><p class="tst-text">Noticed a real improvement in my energy and digestion. Will never switch brands. VK Swiss for life!</p><div class="tst-user"><div class="tst-avatar" style="background:linear-gradient(135deg,#8E44AD,#C39BD3)"><span>SV</span></div><div class="tst-user-info"><strong>Sophie V.</strong><span>📍 Thun, Switzerland</span><div class="tst-verified">✓ Verified Purchase</div></div></div></div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- STICKY BUY BAR -->
   <div class="buybar" id="buybar">
-    <div class="buybar__l"><img id="bar-img" src="" alt="" /><div><strong id="bar-name"></strong><span id="bar-price"></span></div></div>
-    <button class="btn btn--solid" data-magnetic>Add to cart</button>
+    <div class="buybar__l">
+      <img id="bar-img" src="" alt="" />
+      <div>
+        <strong id="bar-name"></strong>
+        <span id="bar-price"></span>
+      </div>
+    </div>
+    <button class="btn btn--gold" data-magnetic>Add to cart</button>
   </div>
 
   <main>
-    <!-- HERO -->
+
+    <!-- HERO ─────────────────────────────────────────────── -->
     <section class="hero" id="buy">
-      <div class="hero__media reveal">
-        <div class="hero__card">
-          <span class="hero__badge">NEW</span>
-          <img id="p-img" src="" alt="" />
-        </div>
-      </div>
+      <div class="hero__bg-word">VK SWISS</div>
+      <div class="hero__inner">
 
-      <div class="hero__info">
-        <span class="pill reveal" id="p-eyebrow">Ayurvedic</span>
-        <h1 class="reveal" id="p-name">Natural</h1>
-        <p class="hero__sub reveal" id="p-sub">in 100% Natural Swiss Ghee</p>
-        <div class="rating reveal">★★★★★ <span>4.9 · 212 reviews</span></div>
-        <p class="hero__lede reveal" id="p-lede"></p>
-
-        <div class="buy reveal">
-          <div class="buy__price"><span id="p-price">CHF 49</span><small>30 capsules · 1/day</small></div>
-          <div class="buy__actions">
-            <button class="btn btn--solid" data-magnetic id="p-final">Add to cart</button>
-            <button class="btn btn--ghost" data-magnetic>Subscribe −15%</button>
+        <!-- Left: text -->
+        <div class="hero__info">
+          <div class="hero__badge reveal">
+            <div class="hero__badge-cross">CH</div>
+            <span>SWISS FORMULATED WELLNESS</span>
+          </div>
+          <h1 class="reveal" id="p-name">Natural</h1>
+          <p class="hero__sub reveal">Premium Swiss Dietary Supplement</p>
+          <p class="hero__lede reveal" id="p-lede"></p>
+          <div class="hero__actions reveal">
+            <button class="btn btn--gold" data-magnetic id="p-final">Shop Now →</button>
+            <button class="btn btn--ghost" data-magnetic>Learn More →</button>
+          </div>
+          <div class="hero__feats reveal">
+            <div class="hero__feat">
+              <div class="hero__feat-ico">✓</div>
+              <span>Swiss Quality<br>Standards</span>
+            </div>
+            <div class="hero__feat">
+              <div class="hero__feat-ico">✓</div>
+              <span>Premium<br>Ingredients</span>
+            </div>
+            <div class="hero__feat">
+              <div class="hero__feat-ico">✓</div>
+              <span>Scientifically<br>Formulated</span>
+            </div>
           </div>
         </div>
 
-        <ul class="trust reveal">
-          <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l7 3v5c0 4.4-3 8.3-7 10-4-1.7-7-5.6-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg> Swiss lab-tested</li>
-          <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12h18M12 3v18"/></svg> 100% natural</li>
-          <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 13l4 4L19 7"/></svg> 30-day promise</li>
-        </ul>
+        <!-- Right: product visual -->
+        <div class="hero__visual">
+          <div class="hero__glow"></div>
+          <div class="hero__stone"></div>
+          <div class="hero__floor-glow"></div>
+          <img id="p-img" class="hero__img" src="" alt="" />
+        </div>
+
       </div>
     </section>
 
-    <!-- WHY / bento -->
-    <section class="why">
-      <div class="why__head reveal">
-        <span class="pill pill--ghost">Why it works</span>
-        <h2>Two actives, perfectly paired</h2>
+    <!-- STATS ROW ────────────────────────────────────────── -->
+    <div class="p-stats">
+      <div class="p-stats__inner">
+        <div class="p-stat reveal">
+          <div class="p-stat__ico">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <div class="p-stat__n stat__n" data-count="85">85%</div>
+          <div class="p-stat__l">better absorption vs standard supplements</div>
+        </div>
+        <div class="p-stat reveal">
+          <div class="p-stat__ico">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <div class="p-stat__n stat__n" data-count="4">4×</div>
+          <div class="p-stat__l">more bioavailable compounds</div>
+        </div>
+        <div class="p-stat reveal">
+          <div class="p-stat__ico">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </div>
+          <div class="p-stat__n stat__n" data-count="5000">5000</div>
+          <div class="p-stat__l">satisfied customers across Europe</div>
+        </div>
+        <div class="p-stat reveal">
+          <div class="p-stat__ico">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l7 3v5c0 4.4-3 8.3-7 10-4-1.7-7-5.6-7-10V6z"/></svg>
+          </div>
+          <div class="p-stat__n">100%</div>
+          <div class="p-stat__l">natural, Swiss-tested formula</div>
+        </div>
       </div>
-      <div class="bento">
-        <article class="card card--accent reveal">
-          <div class="card__icon">✦</div>
-          <h3 id="p-self-title">Active</h3>
-          <ul id="p-self"></ul>
-        </article>
-        <article class="card reveal">
-          <div class="card__icon">◦</div>
-          <h3>Swiss Ghee</h3>
-          <ul id="p-ghee"></ul>
-        </article>
+    </div>
+
+    <!-- WHY CHOOSE ──────────────────────────────────────── -->
+    <section class="p-why" id="why">
+      <div class="p-why__head reveal">
+        <span class="eyebrow">Why choose VK Swiss</span>
+        <h2>The smartest way to take supplements</h2>
+      </div>
+      <div class="p-why__grid">
+        <div class="why-card reveal">
+          <div class="why-card__ico">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+          </div>
+          <h3>Swiss quality standard</h3>
+          <p>Every batch tested in a Swiss laboratory. You get only what's on the label — nothing more, nothing less.</p>
+        </div>
+        <div class="why-card reveal">
+          <div class="why-card__ico">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <h3>Ayurvedic tradition</h3>
+          <p>5,000 years of Ayurvedic wisdom — active botanicals always paired with ghee for maximum effect.</p>
+        </div>
+        <div class="why-card reveal">
+          <div class="why-card__ico">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <h3>Superior absorption</h3>
+          <p>Ghee opens lipid-soluble pathways. Most supplements pass through unused — ours actually reach the cells.</p>
+        </div>
+        <div class="why-card reveal">
+          <div class="why-card__ico">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <h3>Fully transparent</h3>
+          <p>Complete ingredient list, clear dosage, full traceability. No proprietary blends hiding low doses.</p>
+        </div>
       </div>
     </section>
 
-    <!-- COMBO + stats -->
-    <section class="combo" id="combo">
-      <div class="why__head reveal">
-        <span class="pill pill--ghost">The blend</span>
-        <h2 id="p-combo-title">Active &amp; Swiss Ghee</h2>
-      </div>
-      <div class="orbs">
-        <figure class="orb orb--ghee reveal"><div class="orb__img"></div><figcaption>Swiss Ghee<br><small>origin · Swiss milk</small></figcaption></figure>
-        <span class="orbs__plus reveal">+</span>
-        <figure class="orb reveal"><img id="p-orb" src="" alt="" /><figcaption id="p-orb-cap">Active</figcaption></figure>
-      </div>
-      <div class="stats">
-        <div class="statcard reveal"><span class="statcard__n" data-count="4">4×</span><span>more effective</span></div>
-        <div class="statcard reveal"><span class="statcard__n" data-count="85">85%</span><span>better absorption</span></div>
-        <div class="statcard reveal"><span class="statcard__n" data-count="10">10×</span><span>the benefits</span></div>
+    <!-- INGREDIENTS ─────────────────────────────────────── -->
+    <section class="p-ing" id="ingredients-sec">
+      <div class="p-ing__inner">
+        <div class="p-ing__left reveal">
+          <div class="p-ing__mountain"></div>
+          <div class="p-ing__floor"></div>
+          <img id="p-orb" class="p-ing__product" src="" alt="" />
+        </div>
+        <div class="p-ing__right">
+          <div class="p-ing__head reveal">
+            <span class="eyebrow">Premium formula</span>
+            <h2 id="p-self-title">Active</h2>
+            <p class="p-ing__subtitle" id="p-orb-cap">Premium botanical</p>
+          </div>
+          <ul class="p-ing__list reveal" id="p-self"></ul>
+        </div>
       </div>
     </section>
 
-    <!-- BAND -->
-    <section class="band reveal">
-      <h2>Why ghee + actives?</h2>
-      <p>Most supplements are poorly absorbed — up to 80% wasted. In Ayurveda, actives are always bound with ghee for optimal uptake. Our Swiss blend improves absorption by up to 85%, multiplying the benefit tenfold.</p>
+    <!-- PRODUCT FEATURES ────────────────────────────────── -->
+    <section class="p-feats">
+      <div class="p-feats__head reveal">
+        <span class="eyebrow">What's inside</span>
+        <h2>Everything you need, nothing you don't</h2>
+      </div>
+      <div class="p-feats__grid">
+        <div class="feat-card reveal">
+          <div class="feat-card__ico">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l7 3v5c0 4.4-3 8.3-7 10-4-1.7-7-5.6-7-10V6z"/></svg>
+          </div>
+          <p>Swiss lab tested</p>
+        </div>
+        <div class="feat-card reveal">
+          <div class="feat-card__ico">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <p>Swiss Alpine origin</p>
+        </div>
+        <div class="feat-card reveal">
+          <div class="feat-card__ico">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+          <p>100% natural</p>
+        </div>
+        <div class="feat-card reveal">
+          <div class="feat-card__ico">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          <p>No fillers</p>
+        </div>
+        <div class="feat-card reveal">
+          <div class="feat-card__ico">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <p>Free-roaming herd ghee</p>
+        </div>
+        <div class="feat-card reveal">
+          <div class="feat-card__ico">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </div>
+          <p>Full traceability</p>
+        </div>
+      </div>
     </section>
 
-    <!-- DETAILS -->
+    <!-- DETAILS / ACCORDION ─────────────────────────────── -->
     <section class="details" id="use">
-      <div class="dcard reveal"><h3>How to use</h3><p>1 capsule per day, with liquid.</p></div>
-      <div class="dcard reveal"><h3>Inside</h3><p id="p-ingredients"></p></div>
-      <div class="dcard reveal"><h3>Precautions</h3><p>Not for pregnant/breastfeeding women or under-16s. Consult a specialist if under treatment or with high blood pressure, hormonal issues, ulcers, kidney/liver disease, diabetes or thyroid conditions. Do not exceed the daily dose.</p></div>
-      <div class="dcard reveal"><h3>Storage</h3><p>Store at room temperature (15–25°C), out of reach of children. Distribution: AXES sàrl, P.O. Box 27, 2854 Bassecourt, Switzerland.</p></div>
-    </section>
-
-    <!-- RANGE STRIP -->
-    <section class="range reveal">
-      <div class="why__head">
-        <span class="pill pill--ghost">The full range</span>
-        <h2>Explore the collection</h2>
+      <div class="details__inner">
+        <span class="eyebrow">Product details</span>
+        <details class="acc-item" open>
+          <summary class="acc-item__head">How to use</summary>
+          <div class="acc-item__body"><p>Take 1 capsule per day, preferably with a meal. Consistent daily use gives best results over 4–8 weeks.</p></div>
+        </details>
+        <details class="acc-item">
+          <summary class="acc-item__head">Ingredients</summary>
+          <div class="acc-item__body"><p id="p-ingredients"></p></div>
+        </details>
+        <details class="acc-item">
+          <summary class="acc-item__head">Swiss Ghee — what makes it special</summary>
+          <div class="acc-item__body">
+            <ul id="p-ghee" style="padding:8px 0 8px 20px;list-style:disc;color:var(--muted);font-size:13px;line-height:2.1;"></ul>
+          </div>
+        </details>
+        <details class="acc-item">
+          <summary class="acc-item__head">Precautions</summary>
+          <div class="acc-item__body"><p>Not suitable for pregnant or breastfeeding women, or children under 16. Consult a specialist if you are under medical treatment or have high blood pressure, hormonal conditions, ulcers, kidney/liver disease, diabetes, or thyroid conditions. Do not exceed the recommended daily dose.</p></div>
+        </details>
+        <details class="acc-item">
+          <summary class="acc-item__head">Storage &amp; distribution</summary>
+          <div class="acc-item__body"><p>Store at room temperature (15–25°C), away from direct sunlight and out of reach of children. Distribution: AXES sàrl, P.O. Box 27, 2854 Bassecourt, Switzerland.</p></div>
+        </details>
       </div>
-      <a class="range__img" href="/#products" aria-label="View all VK Swiss products">
-        <img src="img/lineup.png" alt="VK Swiss product range — Shilajit, Tribulus, Ashwagandha, Shatavari, Turmeric" />
-      </a>
-      <div class="range__links" id="range-links"></div>
     </section>
 
-    <!-- FINAL -->
-    <section class="final reveal">
-      <h2>Bring the ritual home.</h2>
-      <button class="btn btn--solid btn--lg" data-magnetic>Add to cart</button>
+    <!-- REVIEWS ─────────────────────────────────────────── -->
+    <section class="reviews" id="reviews">
+      <div class="reviews__head reveal">
+        <span class="eyebrow">Customer reviews</span>
+        <h2>What our customers say</h2>
+        <p style="color:var(--muted);font-size:14px;margin-top:10px;">★★★★★ 4.9 · 212 verified reviews</p>
+      </div>
+      <div class="reviews__grid">
+        <div class="rev-card reveal">
+          <div class="rev-stars">★★★★★</div>
+          <p class="rev-text">"I noticed the difference within two weeks. My energy levels are more consistent and I sleep better. The ghee formula really seems to make it absorb faster."</p>
+          <div class="rev-footer">
+            <div class="rev-avatar" style="background:linear-gradient(135deg,#FF8A00,#e05d00)">M</div>
+            <div><strong>Marco B.</strong><span>Zürich, Switzerland</span></div>
+          </div>
+        </div>
+        <div class="rev-card reveal">
+          <div class="rev-stars">★★★★★</div>
+          <p class="rev-text">"Finally a supplement that doesn't upset my stomach. The ghee-bound formula is genius. I've tried cheaper alternatives and nothing compares to the quality here."</p>
+          <div class="rev-footer">
+            <div class="rev-avatar" style="background:linear-gradient(135deg,#6b5ca5,#4a3c8a)">S</div>
+            <div><strong>Sophie K.</strong><span>Geneva, Switzerland</span></div>
+          </div>
+        </div>
+        <div class="rev-card reveal">
+          <div class="rev-stars">★★★★★</div>
+          <p class="rev-text">"The packaging is beautiful and the product works. I love the story — Ayurvedic wisdom meets Swiss precision. Already ordered my second jar."</p>
+          <div class="rev-footer">
+            <div class="rev-avatar" style="background:linear-gradient(135deg,#4aa7d8,#2a7fb8)">L</div>
+            <div><strong>Lara M.</strong><span>Basel, Switzerland</span></div>
+          </div>
+        </div>
+      </div>
     </section>
+
+    <!-- COLLECTION RANGE ────────────────────────────────── -->
+    <section class="collection">
+      <div class="collection__inner">
+        <span class="eyebrow reveal">The full range</span>
+        <h2 class="reveal">Explore the collection</h2>
+        <div class="collection__grid" id="range-links"></div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA (mountain bg) ─────────────────────────── -->
+    <section class="final" id="contact">
+      <div class="final__inner">
+        <div class="final__left reveal">
+          <span class="eyebrow">Ready to start?</span>
+          <h2>Bring the ritual <span>home.</span></h2>
+          <p class="final__sub">Premium Ayurvedic actives, bound in pure Swiss ghee. 30 capsules, 1 per day. Free shipping in Switzerland.</p>
+          <p class="final__price" id="p-price-2">CHF 49</p>
+          <button class="btn btn--gold" data-magnetic style="width:fit-content">Add to cart</button>
+        </div>
+        <div class="final__right reveal">
+          <div class="final__glow"></div>
+          <img class="final__product" id="p-img-cta" src="" alt="" />
+        </div>
+      </div>
+    </section>
+
   </main>
 
+  <!-- FOOTER ──────────────────────────────────────────────── -->
   <footer class="foot">
-    <div class="foot__brand">VK<span>SWISS</span></div>
-    <div class="foot__links">
-      <a href="/">Home</a><a href="/#products">All products</a>
-      <a href="mailto:info@vk-swiss.ch">info@vk-swiss.ch</a><a href="tel:+41792890449">+41 79 289 04 49</a>
+    <div class="foot__grid">
+      <div>
+        <div class="foot__logo">
+          <span class="foot__logo-top">VK</span>
+          <span class="foot__logo-sub">SWISS</span>
+        </div>
+        <p class="foot__tagline">Ayurvedic actives in 100% pure Swiss ghee. Precision meets tradition.</p>
+        <div class="foot__social">
+          <a class="foot__soc" href="#" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+          </a>
+          <a class="foot__soc" href="#" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <p class="foot__col-h">Products</p>
+        <div class="foot__links">
+          <a href="product.html?id=tribulus">Tribulus</a>
+          <a href="product.html?id=shilajit">Shilajit</a>
+          <a href="product.html?id=shatavari">Shatavari</a>
+          <a href="product.html?id=bacopa">Bacopa</a>
+          <a href="product.html?id=turmeric">Turmeric</a>
+          <a href="product.html?id=ashwagandha">Ashwagandha</a>
+        </div>
+      </div>
+      <div>
+        <p class="foot__col-h">Company</p>
+        <div class="foot__links">
+          <a href="/">Home</a>
+          <a href="/#products">All products</a>
+          <a href="#">About VK Swiss</a>
+          <a href="#">Quality promise</a>
+          <a href="#">Ayurvedic tradition</a>
+        </div>
+      </div>
+      <div>
+        <p class="foot__col-h">Contact</p>
+        <div class="foot__contact">
+          <div class="foot__ci">
+            <div class="foot__ci-ico">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <span>info@vk-swiss.ch</span>
+          </div>
+          <div class="foot__ci">
+            <div class="foot__ci-ico">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013 12.91a19.79 19.79 0 01-3.07-8.67A2 2 0 011.95 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            </div>
+            <span>+41 79 289 04 49</span>
+          </div>
+          <div class="foot__ci">
+            <div class="foot__ci-ico">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <span>AXES sàrl, P.O. Box 27<br>2854 Bassecourt, Switzerland</span>
+          </div>
+        </div>
+      </div>
     </div>
-    <p class="foot__legal">© 2026 VK Swiss · Pure Swiss Ghee</p>
+    <div class="foot__bottom">
+      <p>© 2026 VK Swiss · All rights reserved</p>
+      <div class="foot__made">
+        <div class="foot__flag">+</div>
+        <p>Made in Switzerland</p>
+      </div>
+    </div>
   </footer>
 
-  <script type="module" src="/src/product.js"></script>
 </body>
 </html>

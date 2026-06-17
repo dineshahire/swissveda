@@ -12,7 +12,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { CONFIG } from './config.js';
 import { CanvasScrubber, pickTier } from './scrubber.js';
-import { mountLoaderLottie } from './lottie.js';
 
 gsap.registerPlugin(ScrollTrigger);
 // Fewer ScrollTrigger recalcs: ignore the mobile URL-bar resize storm, and snap
@@ -64,16 +63,22 @@ const captionNodes = CONFIG.captions.map((c) => {
   return { ...c, el };
 });
 
+function hideLoader() {
+  loaderEl.classList.add('is-hidden');
+  gsap.from('.ui--header', { y: -30, opacity: 0, duration: 1, ease: 'power3.out', delay: 0.1 });
+}
+
+// Skip loader if returning from product page
+if (sessionStorage.getItem('fromPDP')) {
+  sessionStorage.removeItem('fromPDP');
+  document.documentElement.classList.add('no-loader');
+  loaderEl.style.display = 'none';
+}
+
 function setProgress(p) {
   const pct = Math.round(Math.max(0, Math.min(p, 1)) * 100);
   fillEl.style.width = pct + '%';
   pctEl.textContent = pct;
-}
-const loaderAnim = mountLoaderLottie(document.getElementById('loader-lottie'));
-function hideLoader() {
-  loaderEl.classList.add('is-hidden');
-  setTimeout(() => loaderAnim?.destroy(), 900); // after the fade completes
-  gsap.from('.ui--header', { y: -30, opacity: 0, duration: 1, ease: 'power3.out', delay: 0.1 });
 }
 
 const TIER = pickTier();
@@ -123,20 +128,16 @@ function setupHeroScroll(hero) {
   document.querySelector('.stage').style.height = `${CONFIG.scrollLengthVH * 100}vh`;
 
   const flashEl = document.getElementById('intro-flash');
-  const introTl = gsap.timeline({ delay: 1.3 });
-  introTl
-    .set(canvas, { scale: 1.14 })
-    .set(flashEl, { opacity: 1 })
-    .to(flashEl, { opacity: 0, duration: 2.6, ease: 'power2.inOut' }, 0)
-    .to(canvas, { scale: 1.0, duration: 3.2, ease: 'power2.out' }, 0)
-    .fromTo(captionNodes[0].el, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 1.4, ease: 'power2.out' }, 1.4);
+
+  flashEl.style.opacity = 0;
+  gsap.set(canvas, { scale: 1.0 });
+  gsap.fromTo(captionNodes[0].el, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 1.4, ease: 'power2.out', delay: 0.3 });
 
   let introDone = false;
   const endIntro = () => {
     if (introDone) return;
     introDone = true;
-    introTl.kill();
-    gsap.to(flashEl, { opacity: 0, duration: 0.3 });
+    flashEl.style.opacity = 0;
     gsap.to(canvas, { scale: 1.0, duration: 0.4, ease: 'power2.out' });
   };
 
