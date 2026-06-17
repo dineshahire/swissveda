@@ -206,6 +206,83 @@ a { color: inherit; text-decoration: none; }
   height: auto;
   display: block;
 }
+.stone-banner {
+  position: relative;
+  width: 100%;
+  line-height: 0;
+  min-height: 70vh;
+}
+.stone-banner img {
+  width: 100%;
+  height: 70vh;
+  object-fit: cover;
+  object-position: center 60%;
+  display: block;
+}
+.stone-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+}
+.stone-grad {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(10,8,6,0.52) 0%, rgba(10,8,6,0.28) 45%, transparent 70%);
+  pointer-events: none;
+}
+.stone-content {
+  position: relative;
+  z-index: 2;
+  padding-left: 100px;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.stone-headline {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: clamp(90px, 14vw, 200px);
+  font-weight: 800;
+  line-height: 1.08;
+  color: #fff !important;
+  margin: 0 !important;
+  letter-spacing: -0.02em;
+}
+.stone-headline span {
+  color: #FF7A00 !important;
+  -webkit-text-fill-color: #FF7A00 !important;
+}
+.stone-desc {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: clamp(18px, 2vw, 26px);
+  font-weight: 400;
+  color: rgba(255,255,255,0.90) !important;
+  line-height: 1.6;
+  max-width: 400px;
+  margin: 0;
+}
+.stone-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #FF7A00;
+  color: #fff !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 20px;
+  font-weight: 700;
+  padding: 28px 48px;
+  border-radius: 6px;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(255,122,0,0.40);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  width: fit-content;
+  letter-spacing: 0.01em;
+}
+.stone-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(255,122,0,0.55);
+}
 
 .ing-details {
   width: 100%;
