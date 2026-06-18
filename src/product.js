@@ -24,6 +24,8 @@ const bn = document.querySelector('#banner-name');
 if (bn) bn.innerHTML = p.name.replace(/^(Natural)\s+(.+)/i, '$1<br><span style="color:#FF8A00;white-space:nowrap;font-size:0.65em">$2</span>');
 const bd = document.querySelector('#banner-desc');
 if (bd) bd.textContent = p.lede;
+const bhi = document.querySelector('#banner-hero-img');
+if (bhi && p.bannerImg) { bhi.src = p.bannerImg; bhi.alt = p.name; }
 
 set('#p-eyebrow', p.eyebrow);
 set('#p-name', p.name.replace(/^Natural\s+/i, 'Natural\n')); // line break after "Natural"

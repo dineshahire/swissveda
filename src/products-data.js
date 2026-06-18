@@ -36,7 +36,7 @@ export const PRODUCTS = {
   },
   bacopa: {
     name: 'Natural Bacopa', sub: 'in 100% Natural Swiss Ghee', accent: '#4aa7d8',
-    eyebrow: 'Ayurvedic Nootropic', price: 'CHF 49', img: 'img/bacopa.png',
+    eyebrow: 'Ayurvedic Nootropic', price: 'CHF 49', img: 'img/bacopa.png', bannerImg: 'img/bacopa.png',
     lede: 'A revered Ayurvedic herb for memory, focus and mental clarity.',
     self: ['Stimulates memory & concentration', 'Supports mental clarity', 'Natural antioxidant', 'Helps reduce stress', 'Protects brain cells from ageing', 'Supports cognition'],
     ghee: GHEE,
