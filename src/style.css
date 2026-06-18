@@ -794,7 +794,7 @@ a { color: inherit; text-decoration: none; }
 .banner-shop-btn:hover { background: #e67a00; }
 .banner-learn-btn {
   background: transparent;
-  color: #111 !important;
+  color: #FF8A00 !important;
   border: 3px solid #FF8A00;
 }
 .banner-learn-btn:hover { background: rgba(255,138,0,0.06); }
