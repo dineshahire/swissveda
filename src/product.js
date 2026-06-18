@@ -98,7 +98,7 @@ fill('#p-ghee', p.ghee);
 // ── header nav ─────────────────────────────────────────────────────────────
 const nav = document.querySelector('#pdp-nav');
 nav.innerHTML = `
-  <a href="/" onclick="sessionStorage.setItem('fromPDP','1')">Home</a>
+  <a href="/" onclick="sessionStorage.removeItem('loaderSeen');sessionStorage.removeItem('fromPDP');">Home</a>
   <a href="/#news">News</a>
   <div class="nav-dd">
     <a href="#" onclick="return false" class="nav-dd__btn">Our Products &#9662;</a>
