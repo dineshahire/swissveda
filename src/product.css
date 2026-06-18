@@ -50,24 +50,16 @@ body.pdp ::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 2
 
 
 /* ── Header override ──────────────────────────────────────── */
-body.pdp .ui--header {
+body.pdp .ui--header,
+body.pdp .ui--header.on-light {
   background: transparent !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  border-bottom: none !important;
-  height: 68px;
-  padding: 0 48px !important;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+  border: none !important;
+  box-shadow: none !important;
   color: #111 !important;
 }
-body.pdp .ui--header.on-light {
-  background: transparent !important;
-}
 
-/* Brand logo image */
 body.pdp .brand {
   display: flex !important;
   align-items: center !important;
@@ -75,11 +67,11 @@ body.pdp .brand {
   gap: 0 !important;
 }
 body.pdp .brand__logo {
-  height: 40px;
+  height: 44px;
   width: auto;
   object-fit: contain;
   display: block;
-  filter: none;
+  filter: invert(0) !important;
 }
 
 /* Nav links */
