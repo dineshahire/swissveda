@@ -21,7 +21,7 @@ document.title = `${p.name} — VK Swiss`;
 const set = (sel, txt) => { const el = document.querySelector(sel); if (el) el.textContent = txt; };
 // banner overlay
 const bn = document.querySelector('#banner-name');
-if (bn) bn.innerHTML = p.name.replace(/^(Natural)\s+(.+)/i, '$1<br><span style="color:#FF8A00;white-space:nowrap">$2</span>');
+if (bn) bn.innerHTML = p.name.replace(/^(Natural)\s+(.+)/i, '$1<br><span style="color:#FF8A00;white-space:nowrap;font-size:0.65em">$2</span>');
 const bd = document.querySelector('#banner-desc');
 if (bd) bd.textContent = p.lede;
 
