@@ -25,7 +25,12 @@ if (bn) bn.innerHTML = p.name.replace(/^(Natural)\s+(.+)/i, '$1<br><span style="
 const bd = document.querySelector('#banner-desc');
 if (bd) bd.textContent = p.lede;
 const bhi = document.querySelector('#banner-hero-img');
-if (bhi && p.bannerImg) { bhi.src = p.bannerImg; bhi.alt = p.name; }
+if (bhi) {
+  if (p.bannerImg) { bhi.src = p.bannerImg; bhi.alt = p.name; }
+  requestAnimationFrame(() => { bhi.style.opacity = '1'; });
+}
+const mbi = document.querySelector('#mountain-banner-img');
+if (mbi && p.mountainImg) { mbi.src = p.mountainImg; }
 
 set('#p-eyebrow', p.eyebrow);
 set('#p-name', p.name.replace(/^Natural\s+/i, 'Natural\n')); // line break after "Natural"
