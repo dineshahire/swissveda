@@ -109,6 +109,30 @@ body.pdp .ui--header .nav-dd__btn { text-shadow: none !important; }
 body.pdp .nav a:hover,
 body.pdp .nav a.active { color: var(--orange); }
 
+/* Dropdown — light theme to match PDP nav */
+body.pdp .nav-dd__btn { color: #444 !important; font-size: 13px; font-weight: 500; }
+body.pdp .nav-dd__btn:hover { color: var(--orange) !important; }
+body.pdp .nav-dd__menu {
+  background: #fff;
+  border: 1px solid rgba(255,138,0,0.18);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04);
+}
+body.pdp .nav-dd__item { color: #333; }
+body.pdp .nav-dd__item:hover { background: rgba(255,138,0,0.07); color: #111; }
+body.pdp .nav-dd__item + .nav-dd__item { border-top-color: rgba(255,138,0,0.1); }
+body.pdp .nav-dd__name { color: inherit; }
+body.pdp .nav-dd__desc { color: rgba(255,138,0,0.6); }
+body.pdp .nav-dd__item:hover .nav-dd__desc { color: var(--orange); }
+body.pdp .nav-dd__icon {
+  background: rgba(255,138,0,0.08);
+  border-color: rgba(255,138,0,0.2);
+  color: var(--orange);
+}
+body.pdp .nav-dd__item:hover .nav-dd__icon {
+  background: rgba(255,138,0,0.15);
+  border-color: rgba(255,138,0,0.4);
+}
+
 /* Order Now button in header */
 .pdp-order-btn {
   background: var(--orange);
@@ -186,12 +210,12 @@ body.pdp .btn--gold:hover {
 }
 body.pdp .btn--ghost {
   background: transparent;
-  color: #111;
-  border: 1px solid rgba(0,0,0,0.2);
+  color: var(--orange);
+  border: 1px solid rgba(255,138,0,0.35);
 }
 body.pdp .btn--ghost:hover {
   border-color: var(--orange);
-  color: var(--orange);
+  background: rgba(255,138,0,0.06);
   transform: translateY(-2px);
 }
 
