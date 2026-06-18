@@ -12,6 +12,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { CONFIG } from './config.js';
 import { CanvasScrubber, pickTier } from './scrubber.js';
+import { mountLoaderLottie } from './lottie.js';
 
 gsap.registerPlugin(ScrollTrigger);
 // Fewer ScrollTrigger recalcs: ignore the mobile URL-bar resize storm, and snap
@@ -54,6 +55,7 @@ const pctEl      = $('#loader-pct');
 const canvas     = $('#scene');
 const captionsEl = $('#captions');
 const hintEl     = $('#scroll-hint');
+const homeLottieAnim = mountLoaderLottie($('#home-lottie'));
 
 const captionNodes = CONFIG.captions.map((c) => {
   const el = document.createElement('div');
@@ -65,6 +67,7 @@ const captionNodes = CONFIG.captions.map((c) => {
 
 function hideLoader() {
   loaderEl.classList.add('is-hidden');
+  if (homeLottieAnim) homeLottieAnim.destroy();
   sessionStorage.setItem('loaderSeen', '1');
   gsap.from('.ui--header', { y: -30, opacity: 0, duration: 1, ease: 'power3.out', delay: 0.1 });
 }
