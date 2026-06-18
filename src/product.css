@@ -87,6 +87,12 @@ body.pdp .nav {
   display: flex !important;
   gap: 32px;
   align-items: center;
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  transform: none !important;
+  justify-content: center !important;
+  white-space: nowrap;
 }
 body.pdp .nav a {
   font-size: 13px;
