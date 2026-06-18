@@ -92,10 +92,12 @@ body.pdp .nav {
   white-space: nowrap;
 }
 body.pdp .nav a {
-  font-size: 13px;
-  font-weight: 500;
+  font-family: 'Poppins', sans-serif !important;
+  font-size: clamp(0.74rem, 1vw, 0.86rem) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
   color: #444;
-  letter-spacing: 0.01em;
   transition: color 0.2s;
   text-decoration: none;
   text-shadow: none !important;
@@ -107,7 +109,7 @@ body.pdp .nav a:hover,
 body.pdp .nav a.active { color: var(--orange); }
 
 /* Dropdown — light theme to match PDP nav */
-body.pdp .nav-dd__btn { color: #444 !important; font-size: 13px; font-weight: 500; }
+body.pdp .nav-dd__btn { font-family: 'Poppins', sans-serif !important; color: #444 !important; font-size: clamp(0.74rem, 1vw, 0.86rem) !important; font-weight: 600 !important; letter-spacing: 0.12em !important; text-transform: uppercase !important; }
 body.pdp .nav-dd__btn:hover { color: var(--orange) !important; }
 body.pdp .nav-dd__menu {
   background: #fff;
