@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { PRODUCTS, ORDER } from './products-data.js';
+import { mountLoaderLottie } from './lottie.js';
 
 gsap.registerPlugin(ScrollTrigger);
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -13,11 +14,15 @@ const FINE = matchMedia('(pointer: fine)').matches;
 const pdpLoader = document.getElementById('pdp-loader');
 const pdpFill   = document.getElementById('pdp-loader-fill');
 const pdpPct    = document.getElementById('pdp-loader-pct');
+const pdpLottieAnim = mountLoaderLottie(document.getElementById('pdp-lottie'));
 function hidePdpLoader() {
   if (!pdpLoader) return;
   if (pdpFill) pdpFill.style.width = '100%';
   if (pdpPct)  pdpPct.textContent  = '100';
-  setTimeout(() => { pdpLoader.classList.add('is-hidden'); }, 300);
+  setTimeout(() => {
+    pdpLoader.classList.add('is-hidden');
+    if (pdpLottieAnim) pdpLottieAnim.destroy();
+  }, 300);
 }
 
 // ── pick product from ?id (default shilajit) ───────────────────────────────
