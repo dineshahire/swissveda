@@ -23,7 +23,18 @@
 
   <!-- HERO BANNER -->
   <section class="static-hero-banner">
-    <img src="./img/hero-banner.png" alt="VK Swiss" id="banner-hero-img" />
+    <img src="" alt="VK Swiss" id="banner-hero-img" />
+    <script>
+    (function(){
+      var id = new URLSearchParams(location.search).get('id');
+      var map = {
+        tribulus:'img/tribuls.png', shilajit:'img/shila.png',
+        shatavari:'img/shatavari.png', bacopa:'img/bacopa.png',
+        turmeric:'img/hero-banner.png', ashwagandha:'img/ashwa.png'
+      };
+      document.getElementById('banner-hero-img').src = map[id] || 'img/hero-banner.png';
+    })();
+    </script>
     <div class="banner-overlay">
       <div class="banner-badge"><span class="banner-cross">+</span><span>SWISS FORMULATED WELLNESS</span></div>
       <h1 class="banner-title" id="banner-name"></h1>
