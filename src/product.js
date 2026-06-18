@@ -34,6 +34,13 @@ const firstName = p.name.replace(/^Natural\s+/i, '').split(/[\s/]/)[0];
 document.body.style.setProperty('--accent', p.accent);
 document.title = `${p.name} — VK Swiss`;
 
+// Force transparent header + remove banner gap immediately
+const hdr = document.querySelector('.ui--header');
+if (hdr) { hdr.style.cssText += ';background:transparent!important;border:none!important;box-shadow:none!important;'; }
+const banner = document.querySelector('.static-hero-banner');
+if (banner) banner.style.marginTop = '0';
+document.body.style.background = 'transparent';
+
 // Animate fill to 70% immediately while assets load
 if (pdpFill) pdpFill.style.width = '70%';
 if (pdpPct)  pdpPct.textContent  = '70';
