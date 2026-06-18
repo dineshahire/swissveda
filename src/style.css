@@ -156,11 +156,12 @@ a { color: inherit; text-decoration: none; }
 }
 .banner-title {
   font-family: 'Poppins', sans-serif;
-  font-size: clamp(44px, 7vw, 100px);
+  font-size: clamp(24px, 6vw, 100px);
   font-weight: 800;
   color: #111;
   line-height: 1.05;
   margin: 0;
+  white-space: nowrap;
 }
 .banner-title span { color: #FF8A00; }
 .banner-sub {
