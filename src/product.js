@@ -9,6 +9,17 @@ gsap.registerPlugin(ScrollTrigger);
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const FINE = matchMedia('(pointer: fine)').matches;
 
+// ── Product page loader ────────────────────────────────────────────────────
+const pdpLoader = document.getElementById('pdp-loader');
+const pdpFill   = document.getElementById('pdp-loader-fill');
+const pdpPct    = document.getElementById('pdp-loader-pct');
+function hidePdpLoader() {
+  if (!pdpLoader) return;
+  if (pdpFill) pdpFill.style.width = '100%';
+  if (pdpPct)  pdpPct.textContent  = '100';
+  setTimeout(() => { pdpLoader.classList.add('is-hidden'); }, 300);
+}
+
 // ── pick product from ?id (default shilajit) ───────────────────────────────
 const id = new URLSearchParams(location.search).get('id');
 const key = PRODUCTS[id] ? id : 'shilajit';
@@ -18,6 +29,10 @@ const firstName = p.name.replace(/^Natural\s+/i, '').split(/[\s/]/)[0];
 document.body.style.setProperty('--accent', p.accent);
 document.title = `${p.name} — VK Swiss`;
 
+// Animate fill to 70% immediately while assets load
+if (pdpFill) pdpFill.style.width = '70%';
+if (pdpPct)  pdpPct.textContent  = '70';
+
 const set = (sel, txt) => { const el = document.querySelector(sel); if (el) el.textContent = txt; };
 // banner overlay
 const bn = document.querySelector('#banner-name');
@@ -25,7 +40,13 @@ if (bn) bn.innerHTML = p.name.replace(/^(Natural)\s+(.+)/i, '$1<br><span style="
 const bd = document.querySelector('#banner-desc');
 if (bd) bd.textContent = p.lede;
 const bhi = document.querySelector('#banner-hero-img');
-if (bhi && p.bannerImg) { bhi.src = p.bannerImg; bhi.alt = p.name; }
+if (bhi && p.bannerImg) {
+  bhi.src = p.bannerImg; bhi.alt = p.name;
+  if (bhi.complete) { hidePdpLoader(); }
+  else { bhi.onload = hidePdpLoader; bhi.onerror = hidePdpLoader; }
+} else {
+  hidePdpLoader();
+}
 const mbi = document.querySelector('#mountain-banner-img');
 if (mbi && p.mountainImg) { mbi.src = p.mountainImg; }
 
