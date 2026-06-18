@@ -65,11 +65,12 @@ const captionNodes = CONFIG.captions.map((c) => {
 
 function hideLoader() {
   loaderEl.classList.add('is-hidden');
+  sessionStorage.setItem('loaderSeen', '1');
   gsap.from('.ui--header', { y: -30, opacity: 0, duration: 1, ease: 'power3.out', delay: 0.1 });
 }
 
-// Skip loader if returning from product page
-if (sessionStorage.getItem('fromPDP')) {
+// Skip loader if returning from product page OR already seen this session
+if (sessionStorage.getItem('fromPDP') || sessionStorage.getItem('loaderSeen')) {
   sessionStorage.removeItem('fromPDP');
   document.documentElement.classList.add('no-loader');
   loaderEl.style.display = 'none';
