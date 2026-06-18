@@ -17,7 +17,7 @@ body.pdp .mtn-overlay-row p { color: #666 !important; }
 /* ── Base ─────────────────────────────────────────────────── */
 body.pdp {
   font-family: 'DM Sans', system-ui, sans-serif;
-  background: #05070D;
+  background: #fff;
   color: #fff;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
@@ -59,6 +59,7 @@ body.pdp .ui--header.on-light {
   box-shadow: none !important;
   color: #111 !important;
 }
+body.pdp .static-hero-banner { margin-top: 0 !important; }
 
 body.pdp .brand {
   display: flex !important;
