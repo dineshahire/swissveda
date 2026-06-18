@@ -97,7 +97,7 @@ nav.innerHTML = `
   <a href="/" onclick="sessionStorage.setItem('fromPDP','1')">Home</a>
   <a href="/#news">News</a>
   <div class="nav-dd">
-    <a href="/#products" class="nav-dd__btn">Our Products &#9662;</a>
+    <a href="#" onclick="return false" class="nav-dd__btn">Our Products &#9662;</a>
     <div class="nav-dd__menu">
       <a href="product.html?id=tribulus" class="nav-dd__item">
         <span class="nav-dd__icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="10" cy="10" r="4"/><path d="M10 2v4M10 14v4M2 10h4M14 10h4M4.93 4.93l2.83 2.83M12.24 12.24l2.83 2.83M4.93 15.07l2.83-2.83M12.24 7.76l2.83-2.83"/></svg></span>
