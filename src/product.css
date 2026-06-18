@@ -186,8 +186,8 @@ body.pdp .btn--gold:hover {
 }
 body.pdp .btn--ghost {
   background: transparent;
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.2);
+  color: #111;
+  border: 1px solid rgba(0,0,0,0.2);
 }
 body.pdp .btn--ghost:hover {
   border-color: var(--orange);

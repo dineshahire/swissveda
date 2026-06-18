@@ -66,7 +66,35 @@ const nav = document.querySelector('#pdp-nav');
 nav.innerHTML = `
   <a href="/" onclick="sessionStorage.setItem('fromPDP','1')">Home</a>
   <a href="/#news">News</a>
-  <a href="/#products">Our Products</a>
+  <div class="nav-dd">
+    <a href="/#products" class="nav-dd__btn">Our Products &#9662;</a>
+    <div class="nav-dd__menu">
+      <a href="product.html?id=tribulus" class="nav-dd__item">
+        <span class="nav-dd__icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="10" cy="10" r="4"/><path d="M10 2v4M10 14v4M2 10h4M14 10h4M4.93 4.93l2.83 2.83M12.24 12.24l2.83 2.83M4.93 15.07l2.83-2.83M12.24 7.76l2.83-2.83"/></svg></span>
+        <span class="nav-dd__text"><span class="nav-dd__name">Tribulus</span><span class="nav-dd__desc">Vitality &amp; strength support</span></span>
+      </a>
+      <a href="product.html?id=shilajit" class="nav-dd__item">
+        <span class="nav-dd__icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="10,2 18,7 18,13 10,18 2,13 2,7"/></svg></span>
+        <span class="nav-dd__text"><span class="nav-dd__name">Shilajit</span><span class="nav-dd__desc">Ancient mineral resin, energy</span></span>
+      </a>
+      <a href="product.html?id=shatavari" class="nav-dd__item">
+        <span class="nav-dd__icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10 18C10 18 3 13 3 8a7 7 0 0114 0c0 5-7 10-7 10z"/><path d="M10 8v6"/></svg></span>
+        <span class="nav-dd__text"><span class="nav-dd__name">Shatavari</span><span class="nav-dd__desc">Female wellness &amp; balance</span></span>
+      </a>
+      <a href="product.html?id=bacopa" class="nav-dd__item">
+        <span class="nav-dd__icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="10" cy="10" r="7"/><circle cx="10" cy="10" r="3"/></svg></span>
+        <span class="nav-dd__text"><span class="nav-dd__name">Bacopa</span><span class="nav-dd__desc">Cognitive focus &amp; memory</span></span>
+      </a>
+      <a href="product.html?id=turmeric" class="nav-dd__item">
+        <span class="nav-dd__icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10 3l2.5 5h5l-4 3.5 1.5 5.5L10 14l-5 3 1.5-5.5L2.5 8h5z"/></svg></span>
+        <span class="nav-dd__text"><span class="nav-dd__name">Turmeric / Piperine</span><span class="nav-dd__desc">Anti-inflammatory &amp; absorption</span></span>
+      </a>
+      <a href="product.html?id=ashwagandha" class="nav-dd__item">
+        <span class="nav-dd__icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10 2c0 0-6 4-6 9a6 6 0 0012 0c0-5-6-9-6-9z"/><path d="M10 11V7"/><path d="M7 9c1-1 2-1.5 3-2"/></svg></span>
+        <span class="nav-dd__text"><span class="nav-dd__name">Ashwagandha</span><span class="nav-dd__desc">Stress relief &amp; adaptogen</span></span>
+      </a>
+    </div>
+  </div>
   <a href="/#find">Where To Find Us</a>
   <a href="/#contact">Contact</a>`;
 
