@@ -99,7 +99,7 @@ fill('#p-ghee', p.ghee);
 const nav = document.querySelector('#pdp-nav');
 nav.innerHTML = `
   <a href="/" onclick="sessionStorage.removeItem('loaderSeen');sessionStorage.removeItem('fromPDP');">Home</a>
-  <a href="/#news">News</a>
+  <a href="coming-soon.html">News</a>
   <div class="nav-dd">
     <a href="#" onclick="return false" class="nav-dd__btn">Our Products &#9662;</a>
     <div class="nav-dd__menu">
@@ -123,8 +123,8 @@ nav.innerHTML = `
       </a>
     </div>
   </div>
-  <a href="/#find">Where To Find Us</a>
-  <a href="/#contact">Contact</a>`;
+  <a href="coming-soon.html">Where To Find Us</a>
+  <a href="coming-soon.html">Contact</a>`;
 
 // range strip: chips linking to every product (rich cards)
 const rangeLinks = document.querySelector('#range-links');

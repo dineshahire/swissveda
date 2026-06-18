@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coming Soon — VK Swiss</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background: #05070D;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* background glow */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(255,138,0,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cs-wrap {
+      text-align: center;
+      padding: 40px 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cs-logo {
+      height: 48px;
+      margin-bottom: 48px;
+      opacity: 0.9;
+    }
+
+    .cs-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #FF8A00;
+      margin-bottom: 20px;
+    }
+
+    .cs-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin-bottom: 24px;
+    }
+
+    .cs-title span {
+      color: #FF8A00;
+    }
+
+    .cs-sub {
+      font-size: 15px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.5);
+      max-width: 380px;
+      margin: 0 auto 48px;
+      line-height: 1.7;
+    }
+
+    .cs-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #FF8A00;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 14px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .cs-back:hover { background: #e07800; transform: translateY(-2px); }
+    .cs-back svg { flex-shrink: 0; }
+
+    .cs-dots {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 64px;
+    }
+    .cs-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(255,138,0,0.3);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    .cs-dot:nth-child(2) { animation-delay: 0.3s; }
+    .cs-dot:nth-child(3) { animation-delay: 0.6s; }
+
+    @keyframes pulse {
+      0%, 100% { background: rgba(255,138,0,0.3); transform: scale(1); }
+      50%       { background: rgba(255,138,0,0.9); transform: scale(1.4); }
+    }
+  </style>
+</head>
+<body>
+  <div class="cs-wrap">
+    <img src="./img/vk-logo-black.png" alt="VK Swiss" class="cs-logo" style="filter:invert(1)" />
+    <p class="cs-tag">VK Swiss</p>
+    <h1 class="cs-title">Coming<br><span>Soon</span></h1>
+    <p class="cs-sub">We're working on something great. This page will be available shortly.</p>
+    <a href="/" class="cs-back">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 12L6 8l4-4"/>
+      </svg>
+      Back to Home
+    </a>
+    <div class="cs-dots">
+      <div class="cs-dot"></div>
+      <div class="cs-dot"></div>
+      <div class="cs-dot"></div>
+    </div>
+  </div>
+</body>
+</html>
