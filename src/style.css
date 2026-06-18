@@ -161,7 +161,6 @@ a { color: inherit; text-decoration: none; }
   color: #111;
   line-height: 1.05;
   margin: 0;
-  white-space: nowrap;
 }
 .banner-title span { color: #FF8A00; }
 .banner-sub {
