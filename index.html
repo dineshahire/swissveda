@@ -10,7 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <script>if(sessionStorage.getItem('fromPDP')){document.documentElement.classList.add('no-loader');}</script>
+  <style>.no-loader #loader{display:none!important}</style>
+  <script>if(sessionStorage.getItem('fromPDP')||sessionStorage.getItem('loaderSeen')){sessionStorage.removeItem('fromPDP');document.documentElement.classList.add('no-loader');}</script>
 </head>
 <body>
   <!-- Hidden SVG: unsharp-mask kernel used to crisp the hero reel (applied to
