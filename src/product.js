@@ -25,10 +25,7 @@ if (bn) bn.innerHTML = p.name.replace(/^(Natural)\s+(.+)/i, '$1<br><span style="
 const bd = document.querySelector('#banner-desc');
 if (bd) bd.textContent = p.lede;
 const bhi = document.querySelector('#banner-hero-img');
-if (bhi) {
-  if (p.bannerImg) { bhi.src = p.bannerImg; bhi.alt = p.name; }
-  requestAnimationFrame(() => { bhi.style.opacity = '1'; });
-}
+if (bhi && p.bannerImg) { bhi.src = p.bannerImg; bhi.alt = p.name; }
 const mbi = document.querySelector('#mountain-banner-img');
 if (mbi && p.mountainImg) { mbi.src = p.mountainImg; }
 
