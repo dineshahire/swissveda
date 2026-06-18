@@ -17,7 +17,7 @@ body.pdp .mtn-overlay-row p { color: #666 !important; }
 /* ── Base ─────────────────────────────────────────────────── */
 body.pdp {
   font-family: 'DM Sans', system-ui, sans-serif;
-  background: #fff;
+  background: #05070D;
   color: #fff;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;

@@ -37,7 +37,6 @@ document.title = `${p.name} — VK Swiss`;
 // Force transparent header
 const hdr = document.querySelector('.ui--header');
 if (hdr) { hdr.style.cssText += ';background:transparent!important;border:none!important;box-shadow:none!important;'; }
-document.body.style.background = '#f5ede0';
 
 // Animate fill to 70% immediately while assets load
 if (pdpFill) pdpFill.style.width = '70%';
